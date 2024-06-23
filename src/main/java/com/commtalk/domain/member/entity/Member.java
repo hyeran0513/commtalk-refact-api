@@ -16,13 +16,18 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "members")
+@Table(name = "member")
 public class Member extends BaseEntity {
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
+    private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "member_name", nullable = false)
+    private String memberName;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String phone;

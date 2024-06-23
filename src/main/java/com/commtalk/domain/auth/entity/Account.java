@@ -13,21 +13,22 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "account")
 public class Account extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
+    private Long id;
+
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "nickname")
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    public enum Role {
-        ROLE_ADMIN, ROLE_USER
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_role_id")
+    private AccountRole role;
 
 }

@@ -22,16 +22,15 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private final Key key;
     private final UserDetailsService userDetailsService;
 
-    @Value("${jwt.expiration}")
+    @Value("${spring.jwt.expiration}")
     private long expire_time;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, UserDetailsService userDetailsService) {
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey, UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);

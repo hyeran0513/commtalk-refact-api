@@ -13,11 +13,10 @@ public class PrincipalDetails implements UserDetails {
 
     private final Account account;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(account.getRole().name()));
+        authorities.add(new SimpleGrantedAuthority(account.getRole().getRoleName()));
         return authorities;
     }
 
