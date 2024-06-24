@@ -1,5 +1,7 @@
-package com.commtalk.config.security;
+package com.commtalk.config;
 
+import com.commtalk.config.security.JwtSecurityConfig;
+import com.commtalk.config.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

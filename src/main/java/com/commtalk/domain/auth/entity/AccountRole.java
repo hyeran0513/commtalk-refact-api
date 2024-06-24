@@ -18,7 +18,12 @@ public class AccountRole extends BaseEntity {
     @Column(name = "account_role_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role_name", nullable = false)
-    private String roleName;
+    private Role roleName;
+
+    public enum Role {
+        ROLE_ADMIN, ROLE_USER
+    }
 
 }

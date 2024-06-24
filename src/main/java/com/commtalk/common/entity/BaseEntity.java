@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @Column(name = "create_date")
+    @Column(name = "create_at")
     @CreatedDate
-    private LocalDateTime createDate;
+    private LocalDateTime createAt;
 
-    @Column(name = "update_date")
+    @Column(name = "update_at")
     @LastModifiedDate
-    private LocalDateTime updateDate;
+    private LocalDateTime updateAt;
 
 }

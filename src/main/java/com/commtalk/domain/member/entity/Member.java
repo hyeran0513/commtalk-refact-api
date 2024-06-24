@@ -1,6 +1,7 @@
 package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
+import com.commtalk.domain.auth.dto.JoinDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Getter
 @NoArgsConstructor
@@ -31,5 +33,13 @@ public class Member extends BaseEntity {
     private String email;
 
     private String phone;
+
+    public static Member create(JoinDTO joinDTO) {
+        return Member.builder()
+                .memberName(joinDTO.getUsername())
+                .email(joinDTO.getEmail())
+                .phone(joinDTO.getPhone())
+                .build();
+    }
 
 }

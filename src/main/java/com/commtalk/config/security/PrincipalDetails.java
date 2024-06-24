@@ -1,4 +1,4 @@
-package com.commtalk.domain.auth;
+package com.commtalk.config.security;
 
 import com.commtalk.domain.auth.entity.Account;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(account.getRole().getRoleName()));
+        authorities.add(new SimpleGrantedAuthority(account.getRole().getRoleName().name()));
         return authorities;
     }
 

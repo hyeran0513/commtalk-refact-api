@@ -3,9 +3,7 @@ package com.commtalk.config.security;
 import java.security.SecureRandom;
 import java.util.Date;
 
-import com.commtalk.domain.auth.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -68,7 +66,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * http 헤더로부터 bearer 토큰을 가져옴.
+     * http 헤더로부터 bearer 토큰을 가져옴
      * @param req 요청 객체
      * @return 토큰
      */
