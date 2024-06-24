@@ -6,6 +6,7 @@ import com.commtalk.domain.auth.service.AuthService;
 import com.commtalk.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입")
     @PostMapping(path = "/join")
-    public ResponseEntity<ResponseDTO> join(@RequestBody JoinDTO joinDto) {
+    public ResponseEntity<ResponseDTO> join(@RequestBody @Valid JoinDTO joinDto) {
         Long memberId = authSvc.join(joinDto); // 회원가입
         boardSvc.pinDefaultBoardByMember(memberId); // 기본 고정 게시판 저장
         return ResponseDTO.of(HttpStatus.CREATED, "회원가입에 성공했습니다.");
