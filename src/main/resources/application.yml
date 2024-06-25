@@ -11,7 +11,7 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       use-new-id-generator-mappings: false
@@ -20,11 +20,6 @@ spring:
       hibernate.format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 
-  security:
-    user:
-      name: commtalk
-      password: 1234
-
   servlet:
     multipart:
       file-size-threshold: 1MB
@@ -32,9 +27,12 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
-  jwt:
-    secret: NF3Le1cZvVXk3ZRcvNX0C4G8fVRS0sTOeTk4m8fgz08dMnsA9Nzz2qQAVbuqzYxH
-    expiration: 3600000
+jwt:
+  secret: NF3Le1cZvVXk3ZRcvNX0C4G8fVRS0sTOeTk4m8fgz08dMnsA9Nzz2qQAVbuqzYxH
+  expiration: 3600000
+
+security:
+  permit-uris: /api/v1/auth/join, /api/v1/auth/login
 
 springdoc:
   version: '@project.version@'
@@ -50,3 +48,4 @@ springdoc:
     doc-expansion: none
   paths-to-match:
     - /api/**
+  show-login-endpoint: true

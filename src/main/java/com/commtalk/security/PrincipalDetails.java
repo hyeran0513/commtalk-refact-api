@@ -1,4 +1,4 @@
-package com.commtalk.config.security;
+package com.commtalk.security;
 
 import com.commtalk.domain.auth.entity.Account;
 import lombok.RequiredArgsConstructor;

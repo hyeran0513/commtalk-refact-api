@@ -68,3 +68,6 @@ INSERT INTO board (board_name, board_description, manager_id)
 VALUES ('고양이', '고양이 게시판 소개 영역입니다.', @admin_id);
 INSERT INTO board (board_name, board_description, manager_id) 
 VALUES ('기타', '기타 게시판 소개 영역입니다.', @admin_id);
+
+commit;
+

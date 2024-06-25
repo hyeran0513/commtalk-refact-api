@@ -30,15 +30,11 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_role_id", nullable = false)
     private AccountRole role;
 
-    public static Account create(JoinDTO joinDTO, Long memberId, BCryptPasswordEncoder passwordEncoder) {
-        AccountRole role = AccountRole.builder()
-                .roleName(AccountRole.Role.ROLE_USER)
-                .build();
-
+    public static Account create(JoinDTO joinDTO, Long memberId, AccountRole role, BCryptPasswordEncoder passwordEncoder) {
         return Account.builder()
                 .memberId(memberId)
                 .nickname(joinDTO.getNickname())

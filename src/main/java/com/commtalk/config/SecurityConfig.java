@@ -1,8 +1,10 @@
 package com.commtalk.config;
 
-import com.commtalk.config.security.JwtSecurityConfig;
-import com.commtalk.config.security.JwtTokenProvider;
+import com.commtalk.domain.auth.entity.AccountRole;
+import com.commtalk.security.JwtAuthenticationFilter;
+import com.commtalk.security.JwtAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,19 +14,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] permitList = {
-            "/api/v1/auth/join",
-            "/api/v1/auth/login"
-    };
-
-    private final JwtTokenProvider jwtTokenProvider;
+    @Value("${security.permit-uris}")
+    private final String[] permitList;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationEntryPoint entryPoint;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -42,17 +44,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority(AccountRole.Role.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout"));
-
-        JwtSecurityConfig jwtSecurityConfig = new JwtSecurityConfig(jwtTokenProvider, permitList);
-        jwtSecurityConfig.configure(http);
 
         return http.build();
     }

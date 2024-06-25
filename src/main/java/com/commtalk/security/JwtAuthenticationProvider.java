@@ -1,4 +1,4 @@
-package com.commtalk.config.security;
+package com.commtalk.security;
 
 import java.security.SecureRandom;
 import java.util.Date;
@@ -20,15 +20,15 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
 @Component
-public class JwtTokenProvider {
+public class JwtAuthenticationProvider {
 
     private final Key key;
     private final UserDetailsService userDetailsService;
 
-    @Value("${spring.jwt.expiration}")
+    @Value("${jwt.expiration}")
     private long expire_time;
 
-    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey, UserDetailsService userDetailsService) {
+    public JwtAuthenticationProvider(@Value("${jwt.secret}") String secretKey, UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
