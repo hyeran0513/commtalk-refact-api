@@ -30,6 +30,7 @@ commTalk 프로젝트의 구조적인 개선 및 코드 품질 개선, 프론트
 ### 공감&스크랩
 ### 댓글
 ### 신고 (추가)
+</br></br>
 
 ## ✔ 프론트엔드
 https://github.com/hyeran0513/commtalk-nuxt
