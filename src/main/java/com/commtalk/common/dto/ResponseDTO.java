@@ -8,19 +8,19 @@ import org.springframework.http.ResponseEntity;
 
 @Data
 @Builder
-@Schema(description = "기본 응답 DTO")
-public class ResponseDTO {
+@Schema(description = "기본 응답")
+public class ResponseDTO<T> {
 
     @Schema(description = "상태 코드")
     private String code;
 
     @Schema(description = "메시지")
-    private String message;
+    private T message;
 
-    public static ResponseEntity<ResponseDTO> of(HttpStatus status, String message) {
+    public static <T> ResponseEntity<ResponseDTO<T>> of(HttpStatus status, T message) {
         return ResponseEntity
                 .status(status)
-                .body(ResponseDTO.builder()
+                .body(ResponseDTO.<T>builder()
                         .code(status.name())
                         .message(message)
                         .build());

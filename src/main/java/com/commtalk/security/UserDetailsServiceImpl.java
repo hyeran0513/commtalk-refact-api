@@ -1,7 +1,7 @@
 package com.commtalk.security;
 
-import com.commtalk.domain.auth.entity.Account;
-import com.commtalk.domain.auth.repository.AccountRepository;
+import com.commtalk.domain.member.entity.Account;
+import com.commtalk.domain.member.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,12 +15,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public PrincipalDetails loadUserByUsername(String nickname) {
-        Account account = accountRepo.findByNickname(nickname).orElse(null);
-
-        if (account == null || !account.getNickname().equals(nickname)) {
-            throw new UsernameNotFoundException("User not found with nickname: " + nickname);
-        }
-
+        Account account = accountRepo.findByNickname(nickname)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with nickname: " + nickname));
         return new PrincipalDetails(account);
     }
 }

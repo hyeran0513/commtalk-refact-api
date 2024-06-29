@@ -1,4 +1,4 @@
-package com.commtalk.domain.auth.entity;
+package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import jakarta.persistence.*;

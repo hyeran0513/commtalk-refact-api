@@ -1,8 +1,7 @@
-package com.commtalk.domain.auth.entity;
+package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
-import com.commtalk.domain.auth.dto.JoinDTO;
-import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.member.dto.JoinDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_role_id", nullable = false)
     private AccountRole role;
 

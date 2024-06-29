@@ -23,7 +23,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     // Spring Security 인증 관련 예외 처리
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        resolver.resolveException(request, response, null, authException);
+        Exception exception = (Exception) request.getAttribute("filter.error");
+        if (exception != null) {
+            resolver.resolveException(request, response, null, exception);
+        } else {
+            resolver.resolveException(request, response, null, authException);
+        }
     }
 
 }

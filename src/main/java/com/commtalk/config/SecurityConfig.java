@@ -1,8 +1,8 @@
 package com.commtalk.config;
 
-import com.commtalk.domain.auth.entity.AccountRole;
+import com.commtalk.domain.member.entity.AccountRole;
+import com.commtalk.security.JwtAuthenticationEntryPoint;
 import com.commtalk.security.JwtAuthenticationFilter;
-import com.commtalk.security.JwtAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -26,7 +25,7 @@ public class SecurityConfig {
     @Value("${security.permit-uris}")
     private final String[] permitList;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationEntryPoint entryPoint;
+    private final JwtAuthenticationEntryPoint entryPoint;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -46,14 +45,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/admin/**").hasAnyAuthority(AccountRole.Role.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
                 .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout"));
+                        .logoutUrl("/api/v1/members/logout"));
 
         return http.build();
     }

@@ -1,4 +1,4 @@
-package com.commtalk.domain.auth.exception;
+package com.commtalk.domain.member.exception;
 
 public class MemberIdNullException extends RuntimeException {
 

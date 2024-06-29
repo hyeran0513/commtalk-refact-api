@@ -1,6 +1,6 @@
 package com.commtalk.security;
 
-import com.commtalk.domain.auth.entity.Account;
+import com.commtalk.domain.member.entity.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

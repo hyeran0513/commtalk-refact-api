@@ -1,14 +1,13 @@
-package com.commtalk.domain.auth.dto;
+package com.commtalk.domain.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-@Schema(description = "로그인 DTO")
+@Schema(description = "로그인 정보")
 public class LoginDTO {
 
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")

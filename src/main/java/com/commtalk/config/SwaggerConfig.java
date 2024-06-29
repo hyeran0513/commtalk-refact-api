@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(title = "커톡커톡 API",
                 description = "종합 커뮤니티 커톡커톡 API 명세서",
                 version = "v1"),
-        security = @SecurityRequirement(name = "bearerAuth")
+        security = @SecurityRequirement(name = "Authorization")
 )
 @SecurityScheme(
         name = "Authorization",
