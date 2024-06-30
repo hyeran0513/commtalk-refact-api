@@ -4,6 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.member.dto.JoinDTO;
 import com.commtalk.domain.member.dto.LoginDTO;
 import com.commtalk.domain.member.dto.MemberDTO;
+import com.commtalk.domain.member.dto.MemberUpdateDTO;
 import com.commtalk.domain.member.exception.MemberIdNullException;
 import com.commtalk.domain.member.service.MemberService;
 import com.commtalk.domain.board.service.BoardService;
@@ -56,11 +57,17 @@ public class MemberController {
     }
 
     @Operation(summary = "내 정보 수정")
-    @PutMapping(path = "/me")
-    public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid MemberDTO memberDto) {
-        memberSvc.updateInfo(memberDto); // 회원 정보 수정
+    @PatchMapping(path = "/me")
+    public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid MemberUpdateDTO updateDto,
+                                                  HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        if (memberId == null) {
+            throw new MemberIdNullException("토큰에서 회원 식별자를 찾을 수 없습니다.");
+        }
 
-        MemberDTO updateMemberDto = memberSvc.getInfoById(memberDto.getMemberId()); // 수정된 회원 조회
+        memberSvc.updateInfo(memberId, updateDto); // 회원 정보 수정
+
+        MemberDTO updateMemberDto = memberSvc.getInfoById(memberId); // 수정된 회원 조회
         return ResponseEntity.ok(updateMemberDto);
     }
 

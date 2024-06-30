@@ -1,6 +1,7 @@
 package com.commtalk.domain.member.service.impl;
 
 import com.commtalk.domain.member.dto.MemberDTO;
+import com.commtalk.domain.member.dto.MemberUpdateDTO;
 import com.commtalk.domain.member.entity.AccountRole;
 import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.member.repository.AccountRoleRepository;
@@ -81,15 +82,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void updateInfo(MemberDTO memberDto) {
+    public void updateInfo(Long memberId, MemberUpdateDTO updateDto) {
         // 회원 조회
-        Member member = memberRepo.findById(memberDto.getMemberId())
+        Member member = memberRepo.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 회원 정보 수정
-        member.setMemberName(memberDto.getUsername());
-        member.setEmail(memberDto.getEmail());
-        member.setPhone(memberDto.getPhone());
+        member.setMemberName(updateDto.getUsername());
+        member.setEmail(updateDto.getEmail());
+        member.setPhone(updateDto.getPhone());
 
         // 수정된 회원 정보 저장
         memberRepo.save(member);

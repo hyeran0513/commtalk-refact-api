@@ -3,6 +3,7 @@ package com.commtalk.domain.member.service;
 import com.commtalk.domain.member.dto.JoinDTO;
 import com.commtalk.domain.member.dto.LoginDTO;
 import com.commtalk.domain.member.dto.MemberDTO;
+import com.commtalk.domain.member.dto.MemberUpdateDTO;
 
 public interface MemberService {
 
@@ -12,6 +13,6 @@ public interface MemberService {
 
     MemberDTO getInfoById(Long memberId);
 
-    void updateInfo(MemberDTO memberDto);
+    void updateInfo(Long memberId, MemberUpdateDTO memberDto);
 
 }
