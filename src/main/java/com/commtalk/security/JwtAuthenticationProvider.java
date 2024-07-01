@@ -3,6 +3,7 @@ package com.commtalk.security;
 import java.security.SecureRandom;
 import java.util.Date;
 
+import com.commtalk.domain.member.exception.MemberIdNullException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,7 +108,20 @@ public class JwtAuthenticationProvider {
     public Long getMemberId(HttpServletRequest request) {
         String token = resolveToken(request);
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        return ((Integer)claims.get("memberId")).longValue();
+
+        Object memberIdObject = claims.get("memberId");
+        if (memberIdObject == null) {
+            throw new MemberIdNullException("토큰에서 회원 식별자를 찾을 수 없습니다.");
+        }
+
+        long memberId;
+        try {
+            memberId = ((Integer) memberIdObject).longValue();
+        } catch (ClassCastException | NullPointerException e) {
+            throw new MemberIdNullException("토큰에 잘못된 형식의 회원 식별자가 있습니다.");
+        }
+
+        return memberId;
     }
 
 //    // secret key 랜덤 생성 용도

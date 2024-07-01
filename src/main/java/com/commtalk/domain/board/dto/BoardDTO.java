@@ -1,6 +1,7 @@
 package com.commtalk.domain.board.dto;
 
 import com.commtalk.domain.board.entity.Board;
+import com.commtalk.domain.board.entity.PinnedBoard;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

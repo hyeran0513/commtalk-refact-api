@@ -1,18 +1,17 @@
 package com.commtalk.domain.board.service.impl;
 
+import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.board.dto.BoardDTO;
-import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.entity.PinnedBoard;
-import com.commtalk.domain.board.exception.BoardNotFoundException;
 import com.commtalk.domain.board.repository.BoardRepository;
 import com.commtalk.domain.board.repository.PinnedBoardRepository;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -36,34 +35,75 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDTO getBoard(Long boardId) {
         Board board = boardRepo.findById(boardId)
-                .orElseThrow(() -> new BoardNotFoundException("게시판을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("게시판을 찾을 수 없습니다."));
 
         return BoardDTO.from(board);
     }
 
     @Override
-    public List<PinnedBoardDTO> getPinnedBoards(Long memberId) {
-        List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberId(memberId);
+    public List<BoardDTO> getPinnedBoards(Long memberId) {
+        List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
 
         return pinnedBoardList.stream()
-                .map(PinnedBoardDTO::from)
+                .map(pinnedBoard -> BoardDTO.from(pinnedBoard.getBoard()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void pinDefaultBoardByMember(Long memberId) {
+    public void pinDefaultBoard(Long memberId) {
         // 기본 고정 게시판 지정 (게시판 시퀀스 1~4)
         List<Long> boardIds = LongStream.rangeClosed(1, 4).boxed().toList();
-        Member member = Member.builder().id(memberId).build();
-        Board board;
+        pinBoards(memberId, boardIds);
+    }
 
-        int cnt = 0;
-        for (Long boardId : boardIds) {
-            if (boardRepo.existsById(boardId)) {
-                board = Board.builder().id(boardId).build();
+    @Override
+    public void pinBoards(Long memberId, List<Long> boardIds) {
+        if (boardIds != null && !boardIds.isEmpty()) {
+            // 마지막 순서에 해당하는 핀고정 게시판 조회
+            PinnedBoard lastPinnedBoard = pinnedBoardRepo.findFirstByMemberIdOrderByPinnedOrderDesc(memberId)
+                    .orElseThrow(null);
+
+            // 순서의 시작점 지정
+            int cnt = 0;
+            if (lastPinnedBoard != null) {
+                cnt = lastPinnedBoard.getPinnedOrder() + 1;
+            }
+
+            // 시작 순서부터 핀고정 게시판 생성
+            Member member = Member.builder().id(memberId).build();
+            Board board;
+            for (Long boardId : boardIds) {
+                board = boardRepo.findById(boardId)
+                        .orElseThrow(() -> new EntityNotFoundException("게시판을 찾을 수 없습니다."));
+
                 PinnedBoard pinnedBoard = PinnedBoard.create(member, board, cnt++);
                 pinnedBoardRepo.save(pinnedBoard);
             }
+        }
+    }
+
+    @Override
+    public void unpinBoards(Long memberId, List<Long> boardIds) {
+        if (boardIds != null && !boardIds.isEmpty()) {
+            // 핀고정 게시판 삭제
+            pinnedBoardRepo.deleteByMemberIdAndBoardIdIn(memberId, boardIds);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void reorderPinnedBoards(Long memberId, List<BoardDTO> boardDtoList) {
+        int cnt = 0;
+        for (BoardDTO boardDto : boardDtoList) {
+            PinnedBoard pinnedBoard = pinnedBoardRepo.findByMemberIdAndBoardId(memberId, boardDto.getBoardId())
+                    .orElseThrow(() -> new EntityNotFoundException("핀고정 게시판을 찾을 수 없습니다."));
+
+            // 순서가 달라진 경우에만 DB 업데이트
+            if (pinnedBoard.getPinnedOrder() != cnt) {
+                pinnedBoard.setPinnedOrder(cnt);
+                pinnedBoardRepo.save(pinnedBoard);
+            }
+            cnt++;
         }
     }
 

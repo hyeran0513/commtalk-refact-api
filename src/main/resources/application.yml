@@ -32,7 +32,7 @@ jwt:
   expiration: 3600000
 
 security:
-  permit-uris: /swagger-ui.html, /swagger-ui/**, /api-docs/**, /api/v1/members/join, /api/v1/members/login
+  permit-uris: /swagger-ui.html, /swagger-ui/**, /api-docs/**, /api/v1/members, /api/v1/members/login
 
 springdoc:
   version: '@project.version@'

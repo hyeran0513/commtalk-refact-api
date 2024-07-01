@@ -52,21 +52,9 @@ public class GlobalExceptionHandler {
         return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ResponseDTO<String>> handleMemberNotFoundException(MemberNotFoundException e) {
-        return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
-    }
-
-    @ExceptionHandler(AccountRoleNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ResponseDTO<String>> handleAccountRoleNotFoundException(AccountRoleNotFoundException e) {
-        return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
-    }
-
-    @ExceptionHandler(AccountNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ResponseDTO<String>> handleAccountNotFoundException(AccountRoleNotFoundException e) {
+    public ResponseEntity<ResponseDTO<String>> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
     }
 

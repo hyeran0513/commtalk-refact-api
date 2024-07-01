@@ -4,6 +4,7 @@ import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -26,6 +27,7 @@ public class PinnedBoard {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+    @Setter
     @Column(name = "pinned_order", nullable = false)
     private int pinnedOrder;
 

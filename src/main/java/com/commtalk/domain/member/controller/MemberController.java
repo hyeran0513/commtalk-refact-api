@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "member", description = "회원 API")
@@ -38,9 +39,10 @@ public class MemberController {
 
     @Operation(summary = "회원 생성")
     @PostMapping(path = "")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<ResponseDTO<String>> createMember(@RequestBody @Valid JoinDTO joinDto) {
         Long memberId = memberSvc.join(joinDto); // 회원가입
-        boardSvc.pinDefaultBoardByMember(memberId); // 기본 고정 게시판 저장
+        boardSvc.pinDefaultBoard(memberId); // 기본 고정 게시판 저장
         return ResponseDTO.of(HttpStatus.CREATED, "회원가입에 성공했습니다.");
     }
 
@@ -48,10 +50,6 @@ public class MemberController {
     @GetMapping(path = "/me")
     public ResponseEntity<MemberDTO> getMyInfo(HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        if (memberId == null) {
-            throw new MemberIdNullException("토큰에서 회원 식별자를 찾을 수 없습니다.");
-        }
-
         MemberDTO memberDto = memberSvc.getInfoById(memberId); // 회원 조회
         return ResponseEntity.ok(memberDto);
     }
@@ -61,10 +59,6 @@ public class MemberController {
     public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid MemberUpdateDTO updateDto,
                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        if (memberId == null) {
-            throw new MemberIdNullException("토큰에서 회원 식별자를 찾을 수 없습니다.");
-        }
-
         memberSvc.updateInfo(memberId, updateDto); // 회원 정보 수정
 
         MemberDTO updateMemberDto = memberSvc.getInfoById(memberId); // 수정된 회원 조회

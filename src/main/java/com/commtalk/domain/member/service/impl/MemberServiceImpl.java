@@ -1,5 +1,6 @@
 package com.commtalk.domain.member.service.impl;
 
+import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.dto.MemberDTO;
 import com.commtalk.domain.member.dto.MemberUpdateDTO;
 import com.commtalk.domain.member.entity.AccountRole;
@@ -61,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
         
         // 계정 생성
         AccountRole role = accountRoleRepo.findByRoleName(AccountRole.Role.ROLE_USER)
-                .orElseThrow(() -> new AccountRoleNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
         Account account = Account.create(joinDto, memberId, role, passwordEncoder);
         accountRepo.save(account);
 
@@ -72,10 +73,10 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getInfoById(Long memberId) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
         // 회원 계정 조회
         Account account = accountRepo.findByMemberId(member.getId())
-                .orElseThrow(() -> new AccountNotFoundException("사용자 계정을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("사용자 계정을 찾을 수 없습니다."));
 
         return MemberDTO.from(member, account);
     }
@@ -85,7 +86,7 @@ public class MemberServiceImpl implements MemberService {
     public void updateInfo(Long memberId, MemberUpdateDTO updateDto) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 회원 정보 수정
         member.setMemberName(updateDto.getUsername());
