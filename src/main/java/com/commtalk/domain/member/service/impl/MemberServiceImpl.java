@@ -2,7 +2,7 @@ package com.commtalk.domain.member.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.MemberUpdateDTO;
+import com.commtalk.domain.member.dto.UpdateMemberDTO;
 import com.commtalk.domain.member.entity.AccountRole;
 import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.member.repository.AccountRoleRepository;
@@ -55,18 +55,18 @@ public class MemberServiceImpl implements MemberService {
 
         // 회원 생성
         Member member = Member.create(joinDto);
-        Long memberId = memberRepo.save(member).getId();
-        if (memberId == null) {
+        Member newMember = memberRepo.save(member);
+        if (newMember.getId() == null) {
             throw new MemberIdNullException("멤버 생성에 실패했습니다.");
         }
         
         // 계정 생성
         AccountRole role = accountRoleRepo.findByRoleName(AccountRole.Role.ROLE_USER)
                 .orElseThrow(() -> new EntityNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
-        Account account = Account.create(joinDto, memberId, role, passwordEncoder);
+        Account account = Account.create(joinDto, newMember.getId(), role, passwordEncoder);
         accountRepo.save(account);
 
-        return memberId;
+        return newMember.getId();
     }
 
     @Override
@@ -83,15 +83,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void updateInfo(Long memberId, MemberUpdateDTO updateDto) {
+    public void updateInfo(Long memberId, UpdateMemberDTO memberDto) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 회원 정보 수정
-        member.setMemberName(updateDto.getUsername());
-        member.setEmail(updateDto.getEmail());
-        member.setPhone(updateDto.getPhone());
+        member.setMemberName(memberDto.getUsername());
+        member.setEmail(memberDto.getEmail());
+        member.setPhone(memberDto.getPhone());
 
         // 수정된 회원 정보 저장
         memberRepo.save(member);

@@ -4,8 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.member.dto.JoinDTO;
 import com.commtalk.domain.member.dto.LoginDTO;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.MemberUpdateDTO;
-import com.commtalk.domain.member.exception.MemberIdNullException;
+import com.commtalk.domain.member.dto.UpdateMemberDTO;
 import com.commtalk.domain.member.service.MemberService;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.security.JwtAuthenticationProvider;
@@ -56,10 +55,10 @@ public class MemberController {
 
     @Operation(summary = "내 정보 수정")
     @PatchMapping(path = "/me")
-    public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid MemberUpdateDTO updateDto,
+    public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid UpdateMemberDTO memberDto,
                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        memberSvc.updateInfo(memberId, updateDto); // 회원 정보 수정
+        memberSvc.updateInfo(memberId, memberDto); // 회원 정보 수정
 
         MemberDTO updateMemberDto = memberSvc.getInfoById(memberId); // 수정된 회원 조회
         return ResponseEntity.ok(updateMemberDto);

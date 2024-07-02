@@ -1,5 +1,7 @@
 package com.commtalk.domain.member.dto;
 
+import com.commtalk.domain.board.entity.Board;
+import com.commtalk.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +11,7 @@ import lombok.Data;
 @Data
 @Builder
 @Schema(description = "회원 변경 정보")
-public class MemberUpdateDTO {
+public class UpdateMemberDTO {
 
     @NotBlank(message = "회원명은 필수 입력 값입니다.")
     @Schema(description = "회원명")

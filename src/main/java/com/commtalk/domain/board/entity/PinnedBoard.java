@@ -1,5 +1,6 @@
 package com.commtalk.domain.board.entity;
 
+import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "pinned_board")
-public class PinnedBoard {
+public class PinnedBoard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

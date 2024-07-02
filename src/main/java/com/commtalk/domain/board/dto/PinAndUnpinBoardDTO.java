@@ -8,13 +8,13 @@ import java.util.List;
 
 @Getter
 @Builder
-@Schema(description = "핀고정 게시판 추가 및 삭제 정보")
+@Schema(description = "게시판 핀고정 및 해제 정보")
 public class PinAndUnpinBoardDTO {
 
-    @Schema(description = "추가할 게시판 식별자 목록")
+    @Schema(description = "고정할 게시판 식별자 목록")
     private List<Long> pinBoardIds;
 
-    @Schema(description = "삭제할 게시판 식별자 목록")
+    @Schema(description = "고정 해제할 게시판 식별자 목록")
     private List<Long> unpinBoardIds;
 
 }
