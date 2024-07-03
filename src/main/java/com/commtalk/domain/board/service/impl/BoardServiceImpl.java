@@ -2,6 +2,7 @@ package com.commtalk.domain.board.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.board.dto.BoardDTO;
+import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.entity.PinnedBoard;
 import com.commtalk.domain.board.repository.BoardRepository;
@@ -41,11 +42,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardDTO> getPinnedBoards(Long memberId) {
+    public List<PinnedBoardDTO> getPinnedBoards(Long memberId) {
         List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
 
         return pinnedBoardList.stream()
-                .map(pinnedBoard -> BoardDTO.from(pinnedBoard.getBoard()))
+                .map(pinnedBoard -> PinnedBoardDTO.from(pinnedBoard.getBoard()))
                 .collect(Collectors.toList());
     }
 
@@ -92,9 +93,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public void reorderPinnedBoards(Long memberId, List<BoardDTO> boardDtoList) {
+    public void reorderPinnedBoards(Long memberId, List<PinnedBoardDTO> boardDtoList) {
         int cnt = 0;
-        for (BoardDTO boardDto : boardDtoList) {
+        for (PinnedBoardDTO boardDto : boardDtoList) {
             PinnedBoard pinnedBoard = pinnedBoardRepo.findByMemberIdAndBoardId(memberId, boardDto.getBoardId())
                     .orElseThrow(() -> new EntityNotFoundException("핀고정 게시판을 찾을 수 없습니다."));
 

@@ -1,6 +1,7 @@
 package com.commtalk.domain.board.service;
 
 import com.commtalk.domain.board.dto.BoardDTO;
+import com.commtalk.domain.board.dto.PinnedBoardDTO;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface BoardService {
 
     BoardDTO getBoard(Long boardId);
 
-    List<BoardDTO> getPinnedBoards(Long memberId);
+    List<PinnedBoardDTO> getPinnedBoards(Long memberId);
 
     void pinDefaultBoard(Long memberId);
 
@@ -18,6 +19,6 @@ public interface BoardService {
 
     void unpinBoards(Long memberId, List<Long> boardIds);
 
-    void reorderPinnedBoards(Long memberId, List<BoardDTO> boardDtoList);
+    void reorderPinnedBoards(Long memberId, List<PinnedBoardDTO> boardDtoList);
 
 }

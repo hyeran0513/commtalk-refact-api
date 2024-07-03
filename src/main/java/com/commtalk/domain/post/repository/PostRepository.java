@@ -18,4 +18,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "WHERE b.id = :boardId")
     Page<Post> findByBoardIdOrderByUpdatedAt(Long boardId, Pageable pageable);
 
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN p.board b " +
+            "LEFT JOIN FETCH p.comments c " +
+            "WHERE b.id = :boardId ORDER BY p.viewCount DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p " +
+                    "JOIN p.board b " +
+                    "WHERE b.id = :boardId")
+    Page<Post> findByBoardIdOrderByViewCount(Long boardId, Pageable pageable);
+
 }

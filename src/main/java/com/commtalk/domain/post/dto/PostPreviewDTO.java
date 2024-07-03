@@ -1,5 +1,6 @@
-package com.commtalk.domain.board.dto;
+package com.commtalk.domain.post.dto;
 
+import com.commtalk.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +24,15 @@ public class PostPreviewDTO {
 
     @Schema(description = "좋아요 수")
     private long likeCnt;
+
+    public static PostPreviewDTO of(Post post) {
+        return PostPreviewDTO.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .commentCnt((post.isCommentableYN()) ? post.getComments().size() : 0)
+                .viewCnt(post.getViewCount())
+                .likeCnt(post.getLikeCount())
+                .build();
+    }
 
 }
