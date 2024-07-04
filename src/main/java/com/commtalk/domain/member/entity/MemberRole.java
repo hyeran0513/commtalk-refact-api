@@ -10,12 +10,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "account_role")
-public class AccountRole extends BaseEntity {
+@Table(name = "member_role")
+public class MemberRole extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "account_role_id")
+    @Column(name = "member_role_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)

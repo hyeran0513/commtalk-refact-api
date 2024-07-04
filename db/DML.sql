@@ -1,6 +1,6 @@
 -- 회원 권한 유형
-INSERT INTO account_role (role_name) VALUES ('ROLE_ADMIN');
-INSERT INTO account_role (role_name) VALUES ('ROLE_USER');
+INSERT INTO member_role (role_name) VALUES ('ROLE_ADMIN');
+INSERT INTO member_role (role_name) VALUES ('ROLE_USER');
 
 -- 회원 활동 유형
 INSERT INTO activity_type (type_name) VALUES ('POST_LIKE');
@@ -8,14 +8,15 @@ INSERT INTO activity_type (type_name) VALUES ('COMMENT_LIKE');
 INSERT INTO activity_type (type_name) VALUES ('POST_SCRAP');
 
 -- 관리자 회원 및 계정
-INSERT INTO member (member_name, email, phone) 
-VALUES ('관리자', 'admin@example.com', '010-xxxx-xxxx');
+SET @admin_role_id = (SELECT member_role_id FROM member_role WHERE role_name = 'ROLE_ADMIN');
+
+INSERT INTO member (member_role_id, nickname, member_name, email, phone) 
+VALUES (@admin_role_id, 'admin', '관리자', 'admin@example.com', '010-xxxx-xxxx');
 
 SET @admin_id = (SELECT MAX(MEMBER_ID) FROM member);
-SET @admin_role_id = (SELECT account_role_id FROM account_role WHERE role_name = 'ROLE_ADMIN');
 
-INSERT INTO account (member_id, account_role_id, nickname, password) 
-VALUES (@admin_id, @admin_role_id, 'admin', 'admin');
+INSERT INTO member_password (member_id, password) 
+VALUES (@admin_id, 'admin');
 
 -- 게시판
 INSERT INTO board (board_name, board_description, manager_id) 

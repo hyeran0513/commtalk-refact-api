@@ -1,5 +1,7 @@
 package com.commtalk.domain.post.service.impl;
 
+import com.commtalk.common.exception.EntityNotFoundException;
+import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
 import com.commtalk.domain.post.dto.CreatePostDTO;
 import com.commtalk.domain.post.dto.PostPageDTO;
@@ -32,6 +34,15 @@ public class PostServiceImpl implements PostService {
         // 페이지에 해당하는 게시글 목록 조회
         Page<Post> postPage = postRepo.findByBoardIdOrderByUpdatedAt(boardId, pageable);
         return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostDTO getPost(Long postId) {
+        // 게시글 조회
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        
+        return PostDTO.from(post);
     }
 
     @Override

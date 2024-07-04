@@ -4,6 +4,7 @@ import com.commtalk.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -16,6 +17,10 @@ public class PostPreviewDTO {
     @Schema(description = "게시글 제목")
     private String title;
 
+    @Schema(description = "댓글 허용 여부")
+    private boolean commentableYN;
+
+    @Setter
     @Schema(description = "댓글 수")
     private long commentCnt;
 
@@ -29,7 +34,7 @@ public class PostPreviewDTO {
         return PostPreviewDTO.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
-                .commentCnt((post.isCommentableYN()) ? post.getComments().size() : 0)
+                .commentableYN(post.isCommentableYN())
                 .viewCnt(post.getViewCount())
                 .likeCnt(post.getLikeCount())
                 .build();

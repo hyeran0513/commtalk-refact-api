@@ -2,12 +2,7 @@ package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.member.dto.JoinDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +21,12 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String nickname;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    private MemberPassword password;
+
     @Setter
     @Column(name = "member_name", nullable = false)
     private String memberName;
@@ -37,11 +38,17 @@ public class Member extends BaseEntity {
     @Setter
     private String phone;
 
-    public static Member create(JoinDTO joinDto) {
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_role_id", nullable = false)
+    private MemberRole role;
+
+    public static Member create(JoinDTO joinDto, MemberRole role) {
         return Member.builder()
+                .nickname(joinDto.getNickname())
                 .memberName(joinDto.getUsername())
                 .email(joinDto.getEmail())
                 .phone(joinDto.getPhone())
+                .role(role)
                 .build();
     }
 

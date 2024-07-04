@@ -11,7 +11,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = "SELECT DISTINCT p FROM Post p " +
             "JOIN p.board b " +
             "JOIN FETCH p.author a " +
-            "LEFT JOIN FETCH p.comments c " +
             "WHERE b.id = :boardId ORDER BY p.updatedAt DESC",
             countQuery = "SELECT COUNT(p) FROM Post p " +
                     "JOIN p.board b " +
@@ -20,7 +19,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "SELECT DISTINCT p FROM Post p " +
             "JOIN p.board b " +
-            "LEFT JOIN FETCH p.comments c " +
             "WHERE b.id = :boardId ORDER BY p.viewCount DESC",
             countQuery = "SELECT COUNT(p) FROM Post p " +
                     "JOIN p.board b " +

@@ -11,6 +11,8 @@ public interface BoardService {
 
     BoardDTO getBoard(Long boardId);
 
+    void isExistsBoard(Long boardId);
+
     List<PinnedBoardDTO> getPinnedBoards(Long memberId);
 
     void pinDefaultBoard(Long memberId);

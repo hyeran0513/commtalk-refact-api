@@ -42,6 +42,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public void isExistsBoard(Long boardId) {
+        if (!boardRepo.existsById(boardId)) {
+            throw new EntityNotFoundException("게시판을 찾을 수 없습니다.");
+        }
+    }
+
+    @Override
     public List<PinnedBoardDTO> getPinnedBoards(Long memberId) {
         List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
 
@@ -62,7 +69,7 @@ public class BoardServiceImpl implements BoardService {
         if (boardIds != null && !boardIds.isEmpty()) {
             // 마지막 순서에 해당하는 핀고정 게시판 조회
             PinnedBoard lastPinnedBoard = pinnedBoardRepo.findFirstByMemberIdOrderByPinnedOrderDesc(memberId)
-                    .orElseThrow(null);
+                    .orElse(null);
 
             // 순서의 시작점 지정
             int cnt = 0;

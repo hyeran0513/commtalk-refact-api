@@ -1,7 +1,9 @@
 package com.commtalk.security;
 
-import com.commtalk.domain.member.entity.Account;
-import com.commtalk.domain.member.repository.AccountRepository;
+import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.member.entity.MemberPassword;
+import com.commtalk.domain.member.repository.MemberPasswordRepository;
+import com.commtalk.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,12 +13,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final AccountRepository accountRepo;
+    private final MemberRepository memberRepo;
 
     @Override
     public PrincipalDetails loadUserByUsername(String nickname) {
-        Account account = accountRepo.findByNickname(nickname)
+        Member member = memberRepo.findByNickName(nickname)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with nickname: " + nickname));
-        return new PrincipalDetails(account);
+        return new PrincipalDetails(member);
     }
 }

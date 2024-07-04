@@ -12,33 +12,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "account")
-public class Account extends BaseEntity {
+@Table(name = "member_password")
+public class MemberPassword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "account_id")
+    @Column(name = "password_id")
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
-
-    @Column(nullable = false, unique = true)
-    private String nickname;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_role_id", nullable = false)
-    private AccountRole role;
-
-    public static Account create(JoinDTO joinDTO, Long memberId, AccountRole role, BCryptPasswordEncoder passwordEncoder) {
-        return Account.builder()
-                .memberId(memberId)
-                .nickname(joinDTO.getNickname())
+    public static MemberPassword create(JoinDTO joinDTO, Member member, BCryptPasswordEncoder passwordEncoder) {
+        return MemberPassword.builder()
+                .member(member)
                 .password(passwordEncoder.encode(joinDTO.getPassword()))
-                .role(role)
                 .build();
     }
 

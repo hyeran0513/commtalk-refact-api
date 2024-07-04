@@ -1,17 +1,19 @@
 package com.commtalk.domain.post.dto;
 
+import com.commtalk.domain.board.dto.BoardSimpleDTO;
+import com.commtalk.domain.member.dto.MemberSimpleDTO;
 import com.commtalk.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @Getter
 @Builder
-@Schema(description = "게시글 기본 정보")
-public class PostSimpleDTO {
+@Schema(description = "게시글 정보")
+public class PostDTO {
 
     @Schema(description = "게시글 식별자")
     private Long postId;
@@ -19,11 +21,14 @@ public class PostSimpleDTO {
     @Schema(description = "게시글 제목")
     private String title;
 
-    @Schema(description = "게시글 내용 미리보기")
-    private String previewContent;
+    @Schema(description = "게시글 내용")
+    private String content;
 
-    @Schema(description = "작성자")
-    private String authorName;
+    @Schema(description = "작성자 정보")
+    private MemberSimpleDTO author;
+
+    @Schema(description = "게시판 정보")
+    private BoardSimpleDTO board;
 
     @Schema(description = "최근 수정 일시")
     private String updatedAt;
@@ -31,24 +36,23 @@ public class PostSimpleDTO {
     @Schema(description = "댓글 허용 여부")
     private boolean commentableYN;
 
-    @Setter
-    @Schema(description = "댓글 수")
-    private long commentCnt;
-
     @Schema(description = "조회 수")
     private long viewCnt;
 
     @Schema(description = "좋아요 수")
     private long likeCnt;
 
-    public static PostSimpleDTO of(Post post) {
+    @Schema(description = "해시태그 목록")
+    private List<PostHashtagDTO> hashtags;
+
+    public static PostDTO from(Post post) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        return PostSimpleDTO.builder()
+        return PostDTO.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
-                .previewContent(post.getContent().substring(0, 10) + " ...")
-                .authorName((post.isAnonymousYN()) ? "익명" : post.getAuthor().getMemberName())
+                .content(post.getContent())
+                .author(MemberSimpleDTO.from(post.getAuthor()))
                 .updatedAt(sdf.format(post.getUpdatedAt()))
                 .commentableYN(post.isCommentableYN())
                 .viewCnt(post.getViewCount())

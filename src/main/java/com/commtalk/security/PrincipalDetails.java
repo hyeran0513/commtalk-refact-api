@@ -1,6 +1,7 @@
 package com.commtalk.security;
 
-import com.commtalk.domain.member.entity.Account;
+import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.member.entity.MemberPassword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,27 +12,28 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private final Account account;
+
+    private final Member member;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(account.getRole().getRoleName().name()));
+        authorities.add(new SimpleGrantedAuthority(member.getRole().getRoleName().name()));
         return authorities;
     }
 
     @Override
     public String getPassword() {
-        return account.getPassword();
+        return member.getPassword().getPassword();
     }
 
     @Override
     public String getUsername() {
-        return account.getNickname();
+        return member.getNickname();
     }
 
     public Long getMemberId() {
-        return account.getMemberId();
+        return member.getId();
     }
 
     // 사용자 계정의 만료 여부를 반환 (기본적으로 true)

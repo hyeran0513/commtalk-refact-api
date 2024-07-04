@@ -1,6 +1,7 @@
-package com.commtalk.domain.post.entity;
+package com.commtalk.domain.comment.entity;
 
 import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

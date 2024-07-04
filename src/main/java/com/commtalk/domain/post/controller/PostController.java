@@ -4,6 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.dto.CreatePostDTO;
+import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.dto.PostPageDTO;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
@@ -33,9 +34,17 @@ public class PostController {
     @Operation(summary = "게시글 목록 조회")
     @GetMapping(path = "/{boardId}/posts")
     public ResponseEntity<PostPageDTO> getPosts(@PathVariable Long boardId, @PageableDefault Pageable pageable) {
-        boardSvc.getBoard(boardId); // 게시판이 존재하는지 확인
+        boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
         PostPageDTO postPageDto = postSvc.getPostsByBoard(boardId, pageable); // 게시글 목록 조회
         return ResponseEntity.ok(postPageDto);
+    }
+
+    @Operation(summary = "게시글 상세 조회")
+    @GetMapping(path = "/{boardId}/posts/{postId}")
+    public ResponseEntity<PostDTO> getPost(@PathVariable Long boardId, @PathVariable Long postId) {
+        boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
+        PostDTO postDto = postSvc.getPost(postId); // 게시글 조회
+        return ResponseEntity.ok(postDto);
     }
 
     @Operation(summary = "게시글 생성")
@@ -44,7 +53,7 @@ public class PostController {
     public ResponseEntity<ResponseDTO<String>> createPost(@PathVariable Long boardId, @RequestBody @Valid CreatePostDTO postDto,
                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.getBoard(boardId); // 게시판이 존재하는지 확인
+        boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
         postSvc.createPost(memberId, boardId, postDto); // 게시글 생성
         return ResponseDTO.of(HttpStatus.OK, "게시글을 생성했습니다.");
     }

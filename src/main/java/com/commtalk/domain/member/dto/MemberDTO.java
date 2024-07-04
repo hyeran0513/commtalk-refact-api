@@ -1,6 +1,6 @@
 package com.commtalk.domain.member.dto;
 
-import com.commtalk.domain.member.entity.Account;
+import com.commtalk.domain.member.entity.MemberPassword;
 import com.commtalk.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -26,10 +26,10 @@ public class MemberDTO {
     @Schema(description = "전화번호")
     private String phone;
 
-    public static MemberDTO from(Member member, Account account) {
+    public static MemberDTO from(Member member) {
         return MemberDTO.builder()
                 .memberId(member.getId())
-                .nickname(account.getNickname())
+                .nickname(member.getNickname())
                 .username(member.getMemberName())
                 .email(member.getEmail())
                 .phone(member.getPhone())
