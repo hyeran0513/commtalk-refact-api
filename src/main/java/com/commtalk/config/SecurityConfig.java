@@ -46,8 +46,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/admin/**").hasAnyAuthority(MemberRole.Role.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
-//                        .requestMatchers("/api/v1/boards/pinned/**").authenticated()
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/**", "/api/v1/boards/**/posts").permitAll()
+                        .requestMatchers("/api/v1/boards/pinned/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/**", "/api/v1/boards/*/posts").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
