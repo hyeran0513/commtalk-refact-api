@@ -14,6 +14,8 @@ public interface PostService {
 
     PostDTO getPost(Long postId);
 
+    void isExistsPost(Long postId);
+
     List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size);
 
     void createPost(Long memberId, Long boardId, CreatePostDTO postDto);

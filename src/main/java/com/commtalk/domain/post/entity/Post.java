@@ -2,15 +2,12 @@ package com.commtalk.domain.post.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.board.entity.Board;
-import com.commtalk.domain.comment.entity.Comment;
 import com.commtalk.domain.post.dto.CreatePostDTO;
 import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

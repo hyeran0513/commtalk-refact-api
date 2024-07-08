@@ -1,9 +1,12 @@
-package com.commtalk.domain.comment.dto;
+package com.commtalk.domain.post.dto;
 
+import com.commtalk.domain.post.entity.Comment;
 import com.commtalk.domain.member.dto.MemberSimpleDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.text.SimpleDateFormat;
 
 @Getter
 @Builder
@@ -27,5 +30,18 @@ public class ChildCommentDTO {
 
     @Schema(description = "최근 수정 일시")
     private String updatedAt;
+
+    public static ChildCommentDTO from(Comment comment) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        return ChildCommentDTO.builder()
+                .commentId(comment.getId())
+                .parentId(comment.getParent().getId())
+                .content(comment.getContent())
+                .writer(MemberSimpleDTO.from(comment.getWriter()))
+                .likeCount(comment.getLikeCount())
+                .updatedAt(sdf.format(comment.getUpdatedAt()))
+                .build();
+    }
 
 }

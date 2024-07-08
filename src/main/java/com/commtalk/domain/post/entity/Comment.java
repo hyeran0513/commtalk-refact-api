@@ -1,10 +1,13 @@
-package com.commtalk.domain.comment.entity;
+package com.commtalk.domain.post.entity;
 
+import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.post.dto.CreateCommentDTO;
 import com.commtalk.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -12,15 +15,17 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "comment")
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 
-    @Column(name = "parent_comment_id")
-    private Long parentId;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -41,5 +46,15 @@ public class Comment {
 
     @Column(name = "like_count")
     private long likeCount;
+
+    public static Comment create(Member member, Post post, CreateCommentDTO commentDto) {
+        return Comment.builder()
+                .post(post)
+                .writer(member)
+                .content(commentDto.getContent())
+                .anonymousYN(commentDto.isAnonymousYN())
+                .likeCount(0)
+                .build();
+    }
 
 }

@@ -41,8 +41,15 @@ public class PostServiceImpl implements PostService {
         // 게시글 조회
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        
-        return PostDTO.from(post);
+        List<PostHashtag> hashtags = hashtagRepo.findAllByPostId(postId);
+        return PostDTO.from(post, hashtags);
+    }
+
+    @Override
+    public void isExistsPost(Long postId) {
+        if (!postRepo.existsById(postId)) {
+            throw new EntityNotFoundException("게시글을 찾을 수 없습니다.");
+        }
     }
 
     @Override

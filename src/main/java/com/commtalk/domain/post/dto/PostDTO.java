@@ -1,11 +1,13 @@
 package com.commtalk.domain.post.dto;
 
-import com.commtalk.domain.board.dto.BoardSimpleDTO;
+import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.member.dto.MemberSimpleDTO;
 import com.commtalk.domain.post.entity.Post;
+import com.commtalk.domain.post.entity.PostHashtag;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -27,8 +29,9 @@ public class PostDTO {
     @Schema(description = "작성자 정보")
     private MemberSimpleDTO author;
 
+    @Setter
     @Schema(description = "게시판 정보")
-    private BoardSimpleDTO board;
+    private BoardDTO board;
 
     @Schema(description = "최근 수정 일시")
     private String updatedAt;
@@ -45,7 +48,7 @@ public class PostDTO {
     @Schema(description = "해시태그 목록")
     private List<PostHashtagDTO> hashtags;
 
-    public static PostDTO from(Post post) {
+    public static PostDTO from(Post post, List<PostHashtag> postHashtagList) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return PostDTO.builder()
@@ -57,6 +60,7 @@ public class PostDTO {
                 .commentableYN(post.isCommentableYN())
                 .viewCnt(post.getViewCount())
                 .likeCnt(post.getLikeCount())
+                .hashtags(postHashtagList.stream().map(PostHashtagDTO::from).toList())
                 .build();
     }
 

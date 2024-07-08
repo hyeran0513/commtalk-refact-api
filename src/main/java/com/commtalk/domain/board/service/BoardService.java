@@ -1,6 +1,7 @@
 package com.commtalk.domain.board.service;
 
 import com.commtalk.domain.board.dto.BoardDTO;
+import com.commtalk.domain.board.dto.BoardSimpleDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 
 import java.util.List;
