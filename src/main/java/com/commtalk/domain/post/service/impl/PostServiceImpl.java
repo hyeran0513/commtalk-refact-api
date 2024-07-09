@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +38,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public PostDTO getPost(Long postId) {
         // 게시글 조회
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
         List<PostHashtag> hashtags = hashtagRepo.findAllByPostId(postId);
+
+        // 조회수 증가
+        post.setViewCount(post.getViewCount() + 1);
+        postRepo.save(post);
         return PostDTO.from(post, hashtags);
     }
 
@@ -56,6 +62,16 @@ public class PostServiceImpl implements PostService {
     public List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size) {
         // size 만큼 게시글 미리보기 목록 조회
         Page<Post> postPage = postRepo.findByBoardIdOrderByViewCount(boardId, PageRequest.of(0, size));
+        List<Post> postList = postPage.getContent();
+
+        return postList.stream()
+                .map(PostPreviewDTO::of)
+                .toList();
+    }
+
+    @Override
+    public List<PostPreviewDTO> getPostPreviewsByViews() {
+        Page<Post> postPage = postRepo.findAllByOrderByViewCountDesc(PageRequest.of(0, 3));
         List<Post> postList = postPage.getContent();
 
         return postList.stream()

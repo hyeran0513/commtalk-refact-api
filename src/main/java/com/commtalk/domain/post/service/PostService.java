@@ -18,6 +18,8 @@ public interface PostService {
 
     List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size);
 
+    List<PostPreviewDTO> getPostPreviewsByViews();
+
     void createPost(Long memberId, Long boardId, CreatePostDTO postDto);
 
 }

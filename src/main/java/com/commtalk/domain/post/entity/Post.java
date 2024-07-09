@@ -7,6 +7,7 @@ import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -44,6 +45,7 @@ public class Post extends BaseEntity {
     @Column(name = "deleted_yn")
     private boolean deletedYN;
 
+    @Setter
     @Column(name = "view_count")
     private long viewCount;
 

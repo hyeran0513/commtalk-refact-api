@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "WHERE b.id = :boardId")
     Page<Post> findByBoardIdOrderByViewCount(Long boardId, Pageable pageable);
 
+    Page<Post> findAllByOrderByViewCountDesc(Pageable pageable);
+
 }

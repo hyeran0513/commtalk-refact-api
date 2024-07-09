@@ -42,6 +42,13 @@ public class PostController {
         return ResponseEntity.ok(postPageDto);
     }
 
+    @Operation(summary = "인기 게시글 목록 조회")
+    @GetMapping(path = "/{boardId}/posts/popular")
+    public ResponseEntity<List<PostPreviewDTO>> getPostsByViews() {
+        List<PostPreviewDTO> postPreviewDtoList = postSvc.getPostPreviewsByViews(); // 게시글 목록 조회
+        return ResponseEntity.ok(postPreviewDtoList);
+    }
+
     @Operation(summary = "게시글 상세 조회")
     @GetMapping(path = "/{boardId}/posts/{postId}")
     public ResponseEntity<PostDTO> getPost(@PathVariable Long boardId, @PathVariable Long postId) {
