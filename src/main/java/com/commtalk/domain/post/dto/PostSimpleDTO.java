@@ -43,11 +43,12 @@ public class PostSimpleDTO {
 
     public static PostSimpleDTO of(Post post) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String content = post.getContent();
 
         return PostSimpleDTO.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
-                .previewContent(post.getContent().substring(0, 10) + " ...")
+                .previewContent((content.length() > 10) ? content.substring(0, 10) + " ..." : content)
                 .authorName((post.isAnonymousYN()) ? "익명" : post.getAuthor().getMemberName())
                 .updatedAt(sdf.format(post.getUpdatedAt()))
                 .commentableYN(post.isCommentableYN())
