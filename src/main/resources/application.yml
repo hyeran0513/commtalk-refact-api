@@ -33,7 +33,7 @@ jwt:
 
 security:
   permit-uris: /swagger-ui.html, /swagger-ui/**, /api-docs/**, /api/v1/members, /api/v1/members/login
-
+  permit-get-uris: /api/v1/boards/**, /api/v1/boards/*/posts, /api/v1/posts/*
 springdoc:
   version: '@project.version@'
   api-docs:

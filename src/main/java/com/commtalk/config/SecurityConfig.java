@@ -25,6 +25,8 @@ public class SecurityConfig {
 
     @Value("${security.permit-uris}")
     private final String[] permitList;
+    @Value("${security.permit-get-uris}")
+    private final String[] getPermitList;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
 
@@ -47,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasAnyAuthority(MemberRole.Role.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
                         .requestMatchers("/api/v1/boards/pinned/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/**", "/api/v1/boards/*/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, getPermitList).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
