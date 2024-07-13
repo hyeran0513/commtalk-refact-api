@@ -1,7 +1,7 @@
 package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
-import com.commtalk.domain.member.dto.JoinDTO;
+import com.commtalk.domain.member.dto.request.MemberJoinRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,10 @@ public class MemberPassword extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    public static MemberPassword create(JoinDTO joinDTO, Member member, BCryptPasswordEncoder passwordEncoder) {
+    public static MemberPassword create(MemberJoinRequest joinReq, Member member, BCryptPasswordEncoder passwordEncoder) {
         return MemberPassword.builder()
                 .member(member)
-                .password(passwordEncoder.encode(joinDTO.getPassword()))
+                .password(passwordEncoder.encode(joinReq.getPassword()))
                 .build();
     }
 

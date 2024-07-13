@@ -2,7 +2,7 @@ package com.commtalk.domain.post.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.board.entity.Board;
-import com.commtalk.domain.post.dto.CreatePostDTO;
+import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -55,14 +55,14 @@ public class Post extends BaseEntity {
     @Column(name = "scrap_count")
     private long scrapCount;
 
-    public static Post create(Member member, Board board, CreatePostDTO postDto) {
+    public static Post create(Member member, Board board, PostCreateRequest createReq) {
         return Post.builder()
                 .board(board)
                 .author(member)
-                .title(postDto.getTitle())
-                .content(postDto.getContent())
-                .anonymousYN(postDto.isAnonymousYN())
-                .commentableYN(postDto.isCommentableYN())
+                .title(createReq.getTitle())
+                .content(createReq.getContent())
+                .anonymousYN(createReq.isAnonymousYN())
+                .commentableYN(createReq.isCommentableYN())
                 .viewCount(0)
                 .likeCount(0)
                 .scrapCount(0)

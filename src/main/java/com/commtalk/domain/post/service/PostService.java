@@ -2,7 +2,7 @@ package com.commtalk.domain.post.service;
 
 import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
-import com.commtalk.domain.post.dto.CreatePostDTO;
+import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.dto.PostPageDTO;
 import org.springframework.data.domain.Pageable;
 
@@ -20,6 +20,6 @@ public interface PostService {
 
     List<PostPreviewDTO> getPostPreviewsByViews();
 
-    void createPost(Long memberId, Long boardId, CreatePostDTO postDto);
+    void createPost(Long memberId, Long boardId, PostCreateRequest createReq);
 
 }

@@ -3,7 +3,7 @@ package com.commtalk.domain.post.service.impl;
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
-import com.commtalk.domain.post.dto.CreatePostDTO;
+import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.dto.PostPageDTO;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.post.entity.Post;
@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,12 +80,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void createPost(Long memberId, Long boardId, CreatePostDTO postDto) {
+    public void createPost(Long memberId, Long boardId, PostCreateRequest createReq) {
         // 게시글 생성
         Member member = Member.builder().id(memberId).build();
         Board board = Board.builder().id(boardId).build();
 
-        Post post = Post.create(member, board, postDto);
+        Post post = Post.create(member, board, createReq);
         Post newPost = postRepo.save(post);
         if (newPost.getId() == null) {
             throw new PostIdNullException("게시글 생성에 실패했습니다.");
@@ -94,7 +93,7 @@ public class PostServiceImpl implements PostService {
 
         // 게시글 해시태그 생성
         PostHashtag postHashtag;
-        for (String hashtag : postDto.getHashtags()) {
+        for (String hashtag : createReq.getHashtags()) {
             postHashtag = PostHashtag.create(newPost, hashtag);
             hashtagRepo.save(postHashtag);
         }

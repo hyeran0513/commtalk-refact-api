@@ -1,18 +1,18 @@
 package com.commtalk.domain.member.service;
 
-import com.commtalk.domain.member.dto.JoinDTO;
-import com.commtalk.domain.member.dto.LoginDTO;
+import com.commtalk.domain.member.dto.request.MemberJoinRequest;
+import com.commtalk.domain.member.dto.request.MemberLoginRequest;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.UpdateMemberDTO;
+import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 
 public interface MemberService {
 
-    String login(LoginDTO loginDto);
+    String login(MemberLoginRequest loginReq);
 
-    Long join(JoinDTO joinDto);
+    Long join(MemberJoinRequest joinReq);
 
     MemberDTO getInfoById(Long memberId);
 
-    void updateInfo(Long memberId, UpdateMemberDTO memberDto);
+    void updateInfo(Long memberId, MemberUpdateRequest updateReq);
 
 }

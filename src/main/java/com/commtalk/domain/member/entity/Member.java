@@ -1,7 +1,7 @@
 package com.commtalk.domain.member.entity;
 
 import com.commtalk.common.entity.BaseEntity;
-import com.commtalk.domain.member.dto.JoinDTO;
+import com.commtalk.domain.member.dto.request.MemberJoinRequest;
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -42,12 +42,12 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "member_role_id", nullable = false)
     private MemberRole role;
 
-    public static Member create(JoinDTO joinDto, MemberRole role) {
+    public static Member create(MemberJoinRequest joinReq, MemberRole role) {
         return Member.builder()
-                .nickname(joinDto.getNickname())
-                .memberName(joinDto.getUsername())
-                .email(joinDto.getEmail())
-                .phone(joinDto.getPhone())
+                .nickname(joinReq.getNickname())
+                .memberName(joinReq.getUsername())
+                .email(joinReq.getEmail())
+                .phone(joinReq.getPhone())
                 .role(role)
                 .build();
     }

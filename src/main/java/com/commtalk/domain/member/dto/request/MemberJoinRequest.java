@@ -1,4 +1,4 @@
-package com.commtalk.domain.member.dto;
+package com.commtalk.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 @Schema(description = "회원가입 정보")
-public class JoinDTO {
+public class MemberJoinRequest {
 
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     @Schema(description = "닉네임")
@@ -18,6 +18,10 @@ public class JoinDTO {
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Schema(description = "비밀번호")
     private String password;
+
+    @NotBlank(message = "비밀번호 확인은 필수 입력 값입니다.")
+    @Schema(description = "비밀번호 확인")
+    private String confirmPassword;
 
     @NotBlank(message = "회원명은 필수 입력 값입니다.")
     @Schema(description = "회원명")

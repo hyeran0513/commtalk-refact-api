@@ -3,7 +3,7 @@ package com.commtalk.domain.post.service.impl;
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.entity.Member;
 import com.commtalk.domain.post.dto.ChildCommentDTO;
-import com.commtalk.domain.post.dto.CreateCommentDTO;
+import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.entity.Comment;
 import com.commtalk.domain.post.entity.Post;
@@ -13,7 +13,6 @@ import com.commtalk.domain.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,14 +46,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void createComment(Long memberId, Long postId, CreateCommentDTO commentDto) {
+    public void createComment(Long memberId, Long postId, CommentCreateRequest createReq) {
         // 댓글 생성
         Member member = Member.builder().id(memberId).build();
         Post post = Post.builder().id(postId).build();
 
-        Comment comment = Comment.create(member, post, commentDto);
-        if (commentDto.getParentId() > 0) {
-            Comment parent = commentRepo.findById(commentDto.getParentId())
+        Comment comment = Comment.create(member, post, createReq);
+        if (createReq.getParentId() > 0) {
+            Comment parent = commentRepo.findById(createReq.getParentId())
                     .orElseThrow(() -> new EntityNotFoundException("상위 댓글을 찾을 수 없습니다."));
             comment.setParent(parent);
         }

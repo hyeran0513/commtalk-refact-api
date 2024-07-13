@@ -42,6 +42,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 비밀번호 확인 여부에 대한 예외 처리
+     * @param e PasswordMismatchException 객체
+     * @return  ResponseEntity 객체
+     */
+    @ExceptionHandler(PasswordMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResponseDTO<String>> handlePasswordMismatchException(PasswordMismatchException e) {
+        return ResponseDTO.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    /**
      * 회원 아이디가 null인 경우에 대한 예외 처리
      * @param e MemberIdNullException 객체
      * @return  ResponseEntity 객체

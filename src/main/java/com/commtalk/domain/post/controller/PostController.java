@@ -1,7 +1,7 @@
 package com.commtalk.domain.post.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
-import com.commtalk.domain.post.dto.CreateCommentDTO;
+import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
 import com.commtalk.domain.post.service.CommentService;
@@ -39,7 +39,7 @@ public class PostController {
 
     @Operation(summary = "게시글 댓글 목록 조회")
     @GetMapping(path = "/{postId}/comments")
-    public ResponseEntity<List<ParentCommentDTO>> getCommentsByPost(@PathVariable Long boardId, @PathVariable Long postId) {
+    public ResponseEntity<List<ParentCommentDTO>> getCommentsByPost(@PathVariable Long postId) {
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
         List<ParentCommentDTO> commentDtoList = commentSvc.getCommentsByPost(postId); // 게시글 댓글 목록 조회
         return ResponseEntity.ok(commentDtoList);
@@ -49,11 +49,11 @@ public class PostController {
     @Operation(summary = "게시글 댓글 생성")
     @PostMapping(path = "/{postId}/comments")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseDTO<String>> createComment(@PathVariable Long boardId, @PathVariable Long postId,
-                                                             @RequestBody @Valid CreateCommentDTO commentDto, HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<String>> createComment(@PathVariable Long postId, @RequestBody @Valid CommentCreateRequest createReq,
+                                                             HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
-        commentSvc.createComment(memberId, postId, commentDto); // 댓글 생성
+        commentSvc.createComment(memberId, postId, createReq); // 댓글 생성
         return ResponseDTO.of(HttpStatus.OK, "댓글을 생성했습니다.");
     }
 

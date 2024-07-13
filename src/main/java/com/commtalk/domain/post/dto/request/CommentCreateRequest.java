@@ -1,4 +1,4 @@
-package com.commtalk.domain.post.dto;
+package com.commtalk.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @Schema(description = "게시글 댓글 생성 정보")
-public class CreateCommentDTO {
+public class CommentCreateRequest {
 
     @Schema(description = "상위 댓글 식별자")
     private Long parentId;

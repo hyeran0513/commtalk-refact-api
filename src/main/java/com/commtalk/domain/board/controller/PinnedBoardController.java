@@ -1,7 +1,7 @@
 package com.commtalk.domain.board.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
-import com.commtalk.domain.board.dto.PinAndUnpinBoardDTO;
+import com.commtalk.domain.board.dto.request.BoardPinRequest;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.service.PostService;
@@ -41,11 +41,11 @@ public class PinnedBoardController {
     @Operation(summary = "게시판 핀고정 및 해제")
     @PutMapping(path = "")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid PinAndUnpinBoardDTO boardDto,
+    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid BoardPinRequest pinReq,
                                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.unpinBoards(memberId, boardDto.getUnpinBoardIds()); // 게시판 핀고정 해제
-        boardSvc.pinBoards(memberId, boardDto.getPinBoardIds()); // 게시판 핀고정
+        boardSvc.unpinBoards(memberId, pinReq.getUnpinBoardIds()); // 게시판 핀고정 해제
+        boardSvc.pinBoards(memberId, pinReq.getPinBoardIds()); // 게시판 핀고정
 
         List<PinnedBoardDTO> pinnedBoardDtoList = boardSvc.getPinnedBoards(memberId); // 변경된 핀고정 게시판 목록 조회
         pinnedBoardDtoList.forEach(pb -> pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2))); // 핀고정 게시글 미리보기 조회

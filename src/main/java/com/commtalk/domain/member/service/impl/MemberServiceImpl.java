@@ -2,13 +2,13 @@ package com.commtalk.domain.member.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.UpdateMemberDTO;
+import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 import com.commtalk.domain.member.entity.MemberRole;
 import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.member.repository.MemberRoleRepository;
 import com.commtalk.security.JwtAuthenticationProvider;
-import com.commtalk.domain.member.dto.JoinDTO;
-import com.commtalk.domain.member.dto.LoginDTO;
+import com.commtalk.domain.member.dto.request.MemberJoinRequest;
+import com.commtalk.domain.member.dto.request.MemberLoginRequest;
 import com.commtalk.domain.member.entity.MemberPassword;
 import com.commtalk.domain.member.repository.MemberPasswordRepository;
 import com.commtalk.domain.member.service.MemberService;
@@ -35,10 +35,10 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepo;
 
     @Override
-    public String login(LoginDTO loginDto) {
+    public String login(MemberLoginRequest loginReq) {
         // 회원 인증
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getNickname(), loginDto.getPassword())
+                new UsernamePasswordAuthenticationToken(loginReq.getNickname(), loginReq.getPassword())
         );
 
         // JWT 생성
@@ -47,23 +47,28 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public Long join(JoinDTO joinDto) {
+    public Long join(MemberJoinRequest joinReq) {
         // 계정 중복 여부 확인
-        if (memberRepo.existsByNickname(joinDto.getNickname())) {
+        if (memberRepo.existsByNickname(joinReq.getNickname())) {
             throw new DuplicateNicknameException("닉네임이 중복됩니다.");
+        }
+
+        // 비밀번호 확인
+        if (!joinReq.getPassword().equals(joinReq.getConfirmPassword())) {
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
         // 회원 생성
         MemberRole role = memberRoleRepo.findByRoleName(MemberRole.Role.ROLE_USER)
                 .orElseThrow(() -> new EntityNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
-        Member member = Member.create(joinDto, role);
+        Member member = Member.create(joinReq, role);
         Member newMember = memberRepo.save(member);
         if (newMember.getId() == null) {
             throw new MemberIdNullException("멤버 생성에 실패했습니다.");
         }
         
         // 회원 패스워드 생성
-        MemberPassword password = MemberPassword.create(joinDto, newMember, passwordEncoder);
+        MemberPassword password = MemberPassword.create(joinReq, newMember, passwordEncoder);
         passwordRepo.save(password);
 
         return newMember.getId();
@@ -80,15 +85,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void updateInfo(Long memberId, UpdateMemberDTO memberDto) {
+    public void updateInfo(Long memberId, MemberUpdateRequest updateReq) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 회원 정보 수정
-        member.setMemberName(memberDto.getUsername());
-        member.setEmail(memberDto.getEmail());
-        member.setPhone(memberDto.getPhone());
+        member.setMemberName(updateReq.getUsername());
+        member.setEmail(updateReq.getEmail());
+        member.setPhone(updateReq.getPhone());
 
         // 수정된 회원 정보 저장
         memberRepo.save(member);

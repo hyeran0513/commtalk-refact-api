@@ -4,7 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.dto.*;
-import com.commtalk.domain.post.service.CommentService;
+import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 @Tag(name = "post", description = "게시글 API")
 @RestController
@@ -52,11 +50,11 @@ public class BoardPostController {
     @Operation(summary = "게시글 생성")
     @PostMapping(path = "")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseDTO<String>> createPost(@PathVariable Long boardId, @RequestBody @Valid CreatePostDTO postDto,
+    public ResponseEntity<ResponseDTO<String>> createPost(@PathVariable Long boardId, @RequestBody @Valid PostCreateRequest createReq,
                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
-        postSvc.createPost(memberId, boardId, postDto); // 게시글 생성
+        postSvc.createPost(memberId, boardId, createReq); // 게시글 생성
         return ResponseDTO.of(HttpStatus.OK, "게시글을 생성했습니다.");
     }
 

@@ -1,4 +1,4 @@
-package com.commtalk.domain.post.dto;
+package com.commtalk.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @Schema(description = "게시글 생성 정보")
-public class CreatePostDTO {
+public class PostCreateRequest {
 
     @NotBlank(message = "게시글 제목은 필수 입력 값입니다.")
     @Schema(description = "게시글 제목")

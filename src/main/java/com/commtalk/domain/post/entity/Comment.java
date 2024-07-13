@@ -2,8 +2,7 @@ package com.commtalk.domain.post.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import com.commtalk.domain.member.entity.Member;
-import com.commtalk.domain.post.dto.CreateCommentDTO;
-import com.commtalk.domain.post.entity.Post;
+import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,12 +46,12 @@ public class Comment extends BaseEntity {
     @Column(name = "like_count")
     private long likeCount;
 
-    public static Comment create(Member member, Post post, CreateCommentDTO commentDto) {
+    public static Comment create(Member member, Post post, CommentCreateRequest createReq) {
         return Comment.builder()
                 .post(post)
                 .writer(member)
-                .content(commentDto.getContent())
-                .anonymousYN(commentDto.isAnonymousYN())
+                .content(createReq.getContent())
+                .anonymousYN(createReq.isAnonymousYN())
                 .likeCount(0)
                 .build();
     }
