@@ -9,6 +9,8 @@ public interface CommentService {
 
     List<ParentCommentDTO> getCommentsByPost(Long postId);
 
+    long getCommentCountByPost(Long postId);
+
     void createComment(Long memberId, Long postId, CommentCreateRequest createReq);
 
 }

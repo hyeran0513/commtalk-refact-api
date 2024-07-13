@@ -5,6 +5,7 @@ import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.dto.*;
 import com.commtalk.domain.post.dto.request.PostCreateRequest;
+import com.commtalk.domain.post.service.CommentService;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,12 +30,17 @@ public class BoardPostController {
 
     private final BoardService boardSvc;
     private final PostService postSvc;
+    private final CommentService commentSvc;
 
-    @Operation(summary = "게시판의 게시글 목록 조회")
+    @Operation(summary = "게시판 게시글 목록 조회")
     @GetMapping(path = "")
-    public ResponseEntity<PostPageDTO> getPosts(@PathVariable Long boardId, @PageableDefault Pageable pageable) {
+    public ResponseEntity<PostPageDTO> getPosts(@PathVariable Long boardId, @RequestParam(required = false) String keyword,
+                                                @PageableDefault Pageable pageable) {
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
-        PostPageDTO postPageDto = postSvc.getPostsByBoard(boardId, pageable); // 게시글 목록 조회
+        PostPageDTO postPageDto = (keyword == null) ? postSvc.getPostsByBoard(boardId, pageable)
+                : postSvc.getPostsByBoardAndKeyword(boardId, keyword, pageable); // 게시글 목록 조회
+        postPageDto.getPosts()
+                .forEach(p -> p.setCommentCnt(commentSvc.getCommentCountByPost(p.getPostId()))); // 게시글 댓글 수 조회
         return ResponseEntity.ok(postPageDto);
     }
 

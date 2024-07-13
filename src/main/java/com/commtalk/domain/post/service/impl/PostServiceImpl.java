@@ -30,9 +30,30 @@ public class PostServiceImpl implements PostService {
     private final PostHashtagRepository hashtagRepo;
 
     @Override
-    public PostPageDTO getPostsByBoard(Long boardId, Pageable pageable) {
+    public PostPageDTO getPosts(Pageable pageable) {
         // 페이지에 해당하는 게시글 목록 조회
+        Page<Post> postPage = postRepo.findAllOrderByUpdatedAt(pageable);
+        return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostPageDTO getPostsByBoard(Long boardId, Pageable pageable) {
+        // 페이지에 해당하는 게시판 게시글 목록 조회
         Page<Post> postPage = postRepo.findByBoardIdOrderByUpdatedAt(boardId, pageable);
+        return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostPageDTO getPostsByKeyword(String keyword, Pageable pageable) {
+        // 제목 또는 내용에 키워드가 포함되는 게시글 목록 조회
+        Page<Post> postPage = postRepo.findByKeywordOrderByUpdateAt(keyword, pageable);
+        return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable) {
+        // 제목 또는 내용에 키워드가 포함되는 게시판 게시글 목록 조회
+        Page<Post> postPage = postRepo.findByBoardAndKeywordOrderByUpdateAt(boardId, keyword, pageable);
         return PostPageDTO.of(postPage);
     }
 

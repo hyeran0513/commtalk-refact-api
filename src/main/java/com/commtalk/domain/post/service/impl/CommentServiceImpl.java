@@ -46,6 +46,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public long getCommentCountByPost(Long postId) {
+        return commentRepo.countByPostId(postId);
+    }
+
+    @Override
     public void createComment(Long memberId, Long postId, CommentCreateRequest createReq) {
         // 댓글 생성
         Member member = Member.builder().id(memberId).build();

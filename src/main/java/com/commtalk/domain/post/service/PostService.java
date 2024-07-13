@@ -10,7 +10,13 @@ import java.util.List;
 
 public interface PostService {
 
+    PostPageDTO getPosts(Pageable pageable);
+
     PostPageDTO getPostsByBoard(Long boardId, Pageable pageable);
+
+    PostPageDTO getPostsByKeyword(String keyword, Pageable pageable);
+
+    PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable);
 
     PostDTO getPost(Long postId);
 

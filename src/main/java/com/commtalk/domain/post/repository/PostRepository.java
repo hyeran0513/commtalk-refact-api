@@ -9,6 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.author a " +
+            "ORDER BY p.updatedAt DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p ")
+    Page<Post> findAllOrderByUpdatedAt(Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
             "JOIN p.board b " +
             "JOIN FETCH p.author a " +
             "WHERE b.id = :boardId ORDER BY p.updatedAt DESC",
@@ -16,6 +22,22 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "JOIN p.board b " +
                     "WHERE b.id = :boardId")
     Page<Post> findByBoardIdOrderByUpdatedAt(Long boardId, Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.author a " +
+            "WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword% ORDER BY p.updatedAt DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p " +
+                    "WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword%")
+    Page<Post> findByKeywordOrderByUpdateAt(String keyword, Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN p.board b " +
+            "JOIN FETCH p.author a " +
+            "WHERE b.id = :boardId AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) ORDER BY p.updatedAt DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p " +
+                    "JOIN p.board b " +
+                    "WHERE b.id = :boardId AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)")
+    Page<Post> findByBoardAndKeywordOrderByUpdateAt(Long boardId, String keyword, Pageable pageable);
 
     @Query(value = "SELECT DISTINCT p FROM Post p " +
             "JOIN p.board b " +

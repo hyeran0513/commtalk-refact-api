@@ -4,6 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.board.dto.request.BoardPinRequest;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.service.BoardService;
+import com.commtalk.domain.post.service.CommentService;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,13 +29,19 @@ public class PinnedBoardController {
 
     private final BoardService boardSvc;
     private final PostService postSvc;
+    private final CommentService commentSvc;
 
     @Operation(summary = "핀고정 게시판 조회")
     @GetMapping(path = "")
     public ResponseEntity<List<PinnedBoardDTO>> getPinnedBoards(HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         List<PinnedBoardDTO> boardDtoList = boardSvc.getPinnedBoards(memberId); // 핀고정 게시판 목록 조회
-        boardDtoList.forEach(pb -> pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2))); // 핀고정 게시글 미리보기 조회
+        boardDtoList
+                .forEach(pb -> {
+                    pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2));
+                    pb.getPosts()
+                            .forEach(p -> p.setCommentCnt(commentSvc.getCommentCountByPost(p.getPostId()))); // 게시글 댓글 수 조회
+                }); // 핀고정 게시글 미리보기 조회
         return ResponseEntity.ok(boardDtoList);
     }
 
@@ -48,7 +55,12 @@ public class PinnedBoardController {
         boardSvc.pinBoards(memberId, pinReq.getPinBoardIds()); // 게시판 핀고정
 
         List<PinnedBoardDTO> pinnedBoardDtoList = boardSvc.getPinnedBoards(memberId); // 변경된 핀고정 게시판 목록 조회
-        pinnedBoardDtoList.forEach(pb -> pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2))); // 핀고정 게시글 미리보기 조회
+        pinnedBoardDtoList
+                .forEach(pb -> {
+                    pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2));
+                    pb.getPosts()
+                            .forEach(p -> p.setCommentCnt(commentSvc.getCommentCountByPost(p.getPostId()))); // 게시글 댓글 수 조회
+                }); // 핀고정 게시글 미리보기 조회
         return ResponseEntity.ok(pinnedBoardDtoList);
     }
 
