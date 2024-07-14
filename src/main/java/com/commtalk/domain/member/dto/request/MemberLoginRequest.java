@@ -10,7 +10,7 @@ import lombok.Data;
 @Schema(description = "로그인 정보")
 public class MemberLoginRequest {
 
-    @NotBlank(message = "닉네임은 필수 입력 값입니다.")
+    @NotBlank(message = "아이디는 필수 입력 값입니다.")
     @Schema(description = "닉네임")
     private String nickname;
 

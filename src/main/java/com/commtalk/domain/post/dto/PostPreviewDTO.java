@@ -14,6 +14,9 @@ public class PostPreviewDTO {
     @Schema(description = "게시글 식별자")
     private Long postId;
 
+    @Schema(description = "게시판명")
+    private String boardName;
+
     @Schema(description = "게시글 제목")
     private String title;
 
@@ -33,6 +36,7 @@ public class PostPreviewDTO {
     public static PostPreviewDTO of(Post post) {
         return PostPreviewDTO.builder()
                 .postId(post.getId())
+                .boardName(post.getBoard().getName())
                 .title(post.getTitle())
                 .commentableYN(post.isCommentableYN())
                 .viewCnt(post.getViewCount())

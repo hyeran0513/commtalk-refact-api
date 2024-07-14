@@ -25,6 +25,9 @@ public class ParentCommentDTO {
     @Schema(description = "작성자 정보")
     private MemberSimpleDTO writer;
 
+    @Schema(description = "익명 여부")
+    private boolean anonymousYN;
+
     @Schema(description = "종아요 수")
     private long likeCount;
 
@@ -52,6 +55,7 @@ public class ParentCommentDTO {
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .writer(MemberSimpleDTO.from(comment.getWriter()))
+                .anonymousYN(comment.isAnonymousYN())
                 .likeCount(comment.getLikeCount())
                 .updatedAt(sdf.format(comment.getUpdatedAt()))
                 .build();

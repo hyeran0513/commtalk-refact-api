@@ -50,6 +50,7 @@ public class BoardPostController {
         BoardDTO boardDto = boardSvc.getBoard(boardId); // 게시판 조회
         PostDTO postDto = postSvc.getPost(postId); // 게시글 조회
         postDto.setBoard(boardDto);
+        postDto.setCommentCnt(commentSvc.getCommentCountByPost(postDto.getPostId())); // 게시글 댓글 수 조회
         return ResponseEntity.ok(postDto);
     }
 

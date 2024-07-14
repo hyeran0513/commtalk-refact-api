@@ -27,11 +27,11 @@ public class MemberJoinRequest {
     @Schema(description = "회원명")
     private String username;
 
-    @Email(message = "이메일 형식이 아닙니다.")
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     @Schema(description = "이메일")
     private String email;
 
+    @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     @Schema(description = "전화번호")
     private String phone;
 

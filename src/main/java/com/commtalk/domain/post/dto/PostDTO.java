@@ -39,11 +39,21 @@ public class PostDTO {
     @Schema(description = "댓글 허용 여부")
     private boolean commentableYN;
 
+    @Schema(description = "익명 여부")
+    private boolean anonymousYN;
+
+    @Setter
+    @Schema(description = "댓글 수")
+    private long commentCnt;
+
     @Schema(description = "조회 수")
     private long viewCnt;
 
     @Schema(description = "좋아요 수")
     private long likeCnt;
+
+    @Schema(description = "스크랩 수")
+    private long scrapCnt;
 
     @Schema(description = "해시태그 목록")
     private List<PostHashtagDTO> hashtags;
@@ -58,8 +68,10 @@ public class PostDTO {
                 .author(MemberSimpleDTO.from(post.getAuthor()))
                 .updatedAt(sdf.format(post.getUpdatedAt()))
                 .commentableYN(post.isCommentableYN())
+                .anonymousYN(post.isAnonymousYN())
                 .viewCnt(post.getViewCount())
                 .likeCnt(post.getLikeCount())
+                .scrapCnt(post.getScrapCount())
                 .hashtags(postHashtagList.stream().map(PostHashtagDTO::from).toList())
                 .build();
     }
