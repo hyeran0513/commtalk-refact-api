@@ -75,7 +75,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 핀고정
         pinBoards(memberId, pinReqList.stream()
-                .filter(request -> request.getPinnedBoardId() == null)
+                .filter(request -> request.getPinnedBoardId() == null || request.getPinnedBoardId() == 0)
                 .map(BoardPinRequest::getBoardId)
                 .toList());
     }
