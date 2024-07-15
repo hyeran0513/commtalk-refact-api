@@ -109,7 +109,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void unpinBoards(Long memberId, List<Long> pinBoardIds) {
-        List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
         if (pinBoardIds != null) {
             // 핀고정 게시판 삭제
             if (pinBoardIds.isEmpty()) {
