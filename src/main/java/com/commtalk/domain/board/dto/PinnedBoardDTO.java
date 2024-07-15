@@ -1,6 +1,7 @@
 package com.commtalk.domain.board.dto;
 
 import com.commtalk.domain.board.entity.Board;
+import com.commtalk.domain.board.entity.PinnedBoard;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -13,6 +14,9 @@ import java.util.List;
 @Builder
 @Schema(description = "핀고정 게시판 정보")
 public class PinnedBoardDTO {
+
+    @Schema(description = "핀고정 게시판 식별자")
+    private Long pinnedBoardId;
 
     @Schema(description = "게시판 식별자")
     private Long boardId;
@@ -27,8 +31,11 @@ public class PinnedBoardDTO {
     @Schema(description = "게시글 미리보기 목록")
     private List<PostPreviewDTO> posts;
 
-    public static PinnedBoardDTO from(Board board) {
+    public static PinnedBoardDTO from(PinnedBoard pinnedBoard) {
+        Board board = pinnedBoard.getBoard();
+
         return PinnedBoardDTO.builder()
+                .pinnedBoardId(pinnedBoard.getId())
                 .boardId(board.getId())
                 .boardName(board.getName())
                 .desc(board.getDescription())

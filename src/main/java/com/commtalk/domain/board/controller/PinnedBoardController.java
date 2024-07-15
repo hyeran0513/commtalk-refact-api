@@ -14,7 +14,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,12 +46,10 @@ public class PinnedBoardController {
 
     @Operation(summary = "게시판 핀고정 및 해제")
     @PutMapping(path = "")
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid BoardPinRequest pinReq,
+    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardPinRequest> pinReqList,
                                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.unpinBoards(memberId, pinReq.getUnpinBoardIds()); // 게시판 핀고정 해제
-        boardSvc.pinBoards(memberId, pinReq.getPinBoardIds()); // 게시판 핀고정
+        boardSvc.pinAndUnpinBoards(memberId, pinReqList);
 
         List<PinnedBoardDTO> pinnedBoardDtoList = boardSvc.getPinnedBoards(memberId); // 변경된 핀고정 게시판 목록 조회
         pinnedBoardDtoList
@@ -66,10 +63,10 @@ public class PinnedBoardController {
 
     @Operation(summary = "핀고정 게시판 순서 변경")
     @PatchMapping(path = "/reorder")
-    public ResponseEntity<ResponseDTO<String>> reorderPinnedBoard(@RequestBody @Valid List<PinnedBoardDTO> boardDtoList,
+    public ResponseEntity<ResponseDTO<String>> reorderPinnedBoard(@RequestBody @Valid List<Long> pinnedBoardIdList,
                                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.reorderPinnedBoards(memberId, boardDtoList); // 핀고정 게시판 순서 변경
+        boardSvc.reorderPinnedBoards(memberId, pinnedBoardIdList); // 핀고정 게시판 순서 변경
         return ResponseDTO.of(HttpStatus.OK, "핀고정 게시판 순서를 변경했습니다.");
     }
 

@@ -17,6 +17,8 @@ public interface PinnedBoardRepository extends JpaRepository<PinnedBoard, Long> 
 
     Optional<PinnedBoard> findByMemberIdAndBoardId(Long memberId, Long boardId);
 
-    void deleteByMemberIdAndBoardIdIn(Long memberId, List<Long> boardIds);
+    void deleteByMemberIdAndBoardIdNotIn(Long memberId, List<Long> boardIds);
+
+    void deleteAllByMemberId(Long memberId);
 
 }
