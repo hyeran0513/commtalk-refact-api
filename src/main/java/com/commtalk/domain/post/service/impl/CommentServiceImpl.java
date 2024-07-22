@@ -5,13 +5,16 @@ import com.commtalk.domain.member.entity.Member;
 import com.commtalk.domain.post.dto.ChildCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
+import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
 import com.commtalk.domain.post.entity.Comment;
 import com.commtalk.domain.post.entity.Post;
 import com.commtalk.domain.post.exception.CommentIdNullException;
+import com.commtalk.common.exception.PermissionException;
 import com.commtalk.domain.post.repository.CommentRepository;
 import com.commtalk.domain.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +28,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<ParentCommentDTO> getCommentsByPost(Long postId) {
-        List<Comment> commentList = commentRepo.findByPostId(postId);
+        List<Comment> commentList = commentRepo.findByPostIdAndDeletedYN(postId, false);
         Map<Long, ParentCommentDTO> commentDtoMap = new HashMap<>();
 
         for (Comment comment : commentList) {
@@ -47,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public long getCommentCountByPost(Long postId) {
-        return commentRepo.countByPostId(postId);
+        return commentRepo.countByPostIdAndDeletedYN(postId, false);
     }
 
     @Override
@@ -67,6 +70,41 @@ public class CommentServiceImpl implements CommentService {
         if (newComment.getId() == null) {
             throw new CommentIdNullException("게시글 댓글 생성에 실패했습니다.");
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateComment(Long memberId, Long commentId, CommentUpdateRequest updateReq) {
+        // 댓글 조회
+        Comment comment = commentRepo.findByIdWithWriter(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("상위 댓글을 찾을 수 없습니다."));
+        if (!memberId.equals(comment.getWriter().getId())) {
+            throw new PermissionException("작성자만 댓글 수정이 가능합니다.");
+        }
+        
+        // 댓글 수정
+        comment.setContent(updateReq.getContent());
+        comment.setAnonymousYN(updateReq.isAnonymousYN());
+
+        // 수정된 댓글 저장
+        commentRepo.save(comment);
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long memberId, Long commentId) {
+        // 댓글 조회
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("상위 댓글을 찾을 수 없습니다."));
+        if (!memberId.equals(comment.getWriter().getId())) {
+            throw new PermissionException("작성자만 댓글 삭제가 가능합니다.");
+        }
+        
+        // 댓글의 deletedYN 컬럼 값을 true로 변경
+        comment.setDeletedYN(true);
+
+        // 수정된 댓글 저장
+        commentRepo.save(comment);
     }
 
 }

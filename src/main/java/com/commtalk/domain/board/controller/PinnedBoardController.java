@@ -45,7 +45,7 @@ public class PinnedBoardController {
     }
 
     @Operation(summary = "게시판 핀고정 및 해제")
-    @PutMapping(path = "")
+    @PostMapping(path = "")
     public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardPinRequest> pinReqList,
                                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);

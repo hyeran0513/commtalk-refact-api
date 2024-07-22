@@ -34,12 +34,15 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "writer_id", nullable = false)
     private Member writer;
 
+    @Setter
     @Column(name = "comment_content", nullable = false)
     private String content;
 
+    @Setter
     @Column(name = "anonymous_yn")
     private boolean anonymousYN;
 
+    @Setter
     @Column(name = "deleted_yn")
     private boolean deletedYN;
 

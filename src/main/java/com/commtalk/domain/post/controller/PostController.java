@@ -5,6 +5,7 @@ import com.commtalk.domain.post.dto.PostPageDTO;
 import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
+import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
 import com.commtalk.domain.post.service.CommentService;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
@@ -70,6 +71,26 @@ public class PostController {
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
         commentSvc.createComment(memberId, postId, createReq); // 댓글 생성
         return ResponseDTO.of(HttpStatus.OK, "댓글을 생성했습니다.");
+    }
+
+    @Operation(summary = "게시글 댓글 수정")
+    @PatchMapping(path = "/{postId}/comments/{commentId}")
+    public ResponseEntity<ResponseDTO<String>> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                             @RequestBody @Valid CommentUpdateRequest updateReq, HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
+        commentSvc.updateComment(memberId, commentId, updateReq); // 댓글 수정
+        return ResponseDTO.of(HttpStatus.OK, "댓글을 수정했습니다.");
+    }
+
+    @Operation(summary = "게시글 댓글 삭제")
+    @DeleteMapping(path = "/{postId}/comments/{commentId}")
+    public ResponseEntity<ResponseDTO<String>> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                             HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
+        commentSvc.deleteComment(memberId, commentId); // 댓글 수정
+        return ResponseDTO.of(HttpStatus.OK, "댓글을 삭제했습니다.");
     }
 
 }

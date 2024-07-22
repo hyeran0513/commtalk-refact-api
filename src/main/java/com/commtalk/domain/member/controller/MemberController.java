@@ -4,6 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.member.dto.request.MemberJoinRequest;
 import com.commtalk.domain.member.dto.request.MemberLoginRequest;
 import com.commtalk.domain.member.dto.MemberDTO;
+import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
 import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 import com.commtalk.domain.member.service.MemberService;
 import com.commtalk.domain.board.service.BoardService;
@@ -62,6 +63,13 @@ public class MemberController {
 
         MemberDTO updateMemberDto = memberSvc.getInfoById(memberId); // 수정된 회원 조회
         return ResponseEntity.ok(updateMemberDto);
+    }
+
+    @Operation(summary = "비밀번호 변경")
+    @PatchMapping(path = "/password")
+    public ResponseEntity<ResponseDTO<String>> updatePassword(@RequestBody @Valid MemberPasswordUpdateRequest updateRed) {
+
+        return ResponseDTO.of(HttpStatus.CREATED, "비밀번호 변경에 성공했습니다.");
     }
 
 }

@@ -63,6 +63,18 @@ public class GlobalExceptionHandler {
         return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
+    /**
+     * 권한 예외 처리 핸들러
+     * @param e PermissionException 객체
+     * @return ResponseEntity 객체
+     */
+    @ExceptionHandler(PermissionException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ResponseDTO<String>> handlePermissionException(PermissionException e) {
+        return ResponseDTO.of(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ResponseDTO<String>> handleEntityNotFoundException(EntityNotFoundException e) {
