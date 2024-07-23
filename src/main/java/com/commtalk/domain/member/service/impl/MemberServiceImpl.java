@@ -2,6 +2,7 @@ package com.commtalk.domain.member.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.dto.MemberDTO;
+import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
 import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 import com.commtalk.domain.member.entity.MemberRole;
 import com.commtalk.domain.member.exception.*;
@@ -97,6 +98,28 @@ public class MemberServiceImpl implements MemberService {
 
         // 수정된 회원 정보 저장
         memberRepo.save(member);
+    }
+
+    @Override
+    public void updatePassword(Long memberId, MemberPasswordUpdateRequest updateReq) {
+        // 회원 비밀번호 조회
+        MemberPassword password = passwordRepo.findByMemberId(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자 비밀번호를 찾을 수 없습니다."));
+
+        // 현재 비밀번호 확인
+        if (!password.isEqualPassword(updateReq.getCurrentPassword(), passwordEncoder)) {
+            throw new PasswordMismatchException("현재 비밀번호가 일치하지 않습니다.");
+        }
+        // 비밀번호 확인
+        if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {
+            throw new PasswordMismatchException("확인 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호 변경
+        password.setNewPassword(updateReq.getNewPassword(), passwordEncoder);
+
+        // 변경된 비밀번호 저장
+        passwordRepo.save(password);
     }
 
 }

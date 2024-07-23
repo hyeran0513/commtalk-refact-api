@@ -1,8 +1,6 @@
 package com.commtalk.security;
 
 import com.commtalk.domain.member.entity.Member;
-import com.commtalk.domain.member.entity.MemberPassword;
-import com.commtalk.domain.member.repository.MemberPasswordRepository;
 import com.commtalk.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;

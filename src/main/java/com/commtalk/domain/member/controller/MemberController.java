@@ -67,9 +67,11 @@ public class MemberController {
 
     @Operation(summary = "비밀번호 변경")
     @PatchMapping(path = "/password")
-    public ResponseEntity<ResponseDTO<String>> updatePassword(@RequestBody @Valid MemberPasswordUpdateRequest updateRed) {
-
-        return ResponseDTO.of(HttpStatus.CREATED, "비밀번호 변경에 성공했습니다.");
+    public ResponseEntity<ResponseDTO<String>> updatePassword(@RequestBody @Valid MemberPasswordUpdateRequest updateReq,
+                                                              HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        memberSvc.updatePassword(memberId, updateReq);  // 비밀번호 변경
+        return ResponseDTO.of(HttpStatus.OK, "비밀번호 변경에 성공했습니다.");
     }
 
 }

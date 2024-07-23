@@ -34,4 +34,12 @@ public class MemberPassword extends BaseEntity {
                 .build();
     }
 
+    public boolean isEqualPassword(String password, BCryptPasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password, this.password);
+    }
+
+    public void setNewPassword(String newPassword, BCryptPasswordEncoder passwordEncoder) {
+        password = passwordEncoder.encode(newPassword);
+    }
+
 }
