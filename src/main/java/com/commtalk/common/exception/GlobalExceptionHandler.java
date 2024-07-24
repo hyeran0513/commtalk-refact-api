@@ -2,6 +2,7 @@ package com.commtalk.common.exception;
 
 import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.member.exception.*;
+import com.commtalk.domain.post.exception.MemberActivitySetException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MemberIdNullException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleMemberIdNullException(MemberIdNullException e) {
+        return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    /**
+     * 회원 활동 객체 구성 중 발생한 예외 처리
+     * @param e MemberActivitySetException 객체
+     * @return  ResponseEntity 객체
+     */
+    @ExceptionHandler(MemberActivitySetException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ResponseDTO<String>> handleMemberActivitySetException(MemberActivitySetException e) {
         return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
