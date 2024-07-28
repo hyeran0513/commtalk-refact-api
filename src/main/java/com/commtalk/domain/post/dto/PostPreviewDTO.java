@@ -1,5 +1,6 @@
 package com.commtalk.domain.post.dto;
 
+import com.commtalk.domain.board.dto.BoardSimpleDTO;
 import com.commtalk.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -14,8 +15,8 @@ public class PostPreviewDTO {
     @Schema(description = "게시글 식별자")
     private Long postId;
 
-    @Schema(description = "게시판명")
-    private String boardName;
+    @Schema(description = "게시판 정보")
+    private BoardSimpleDTO board;
 
     @Schema(description = "게시글 제목")
     private String title;
@@ -36,7 +37,7 @@ public class PostPreviewDTO {
     public static PostPreviewDTO of(Post post) {
         return PostPreviewDTO.builder()
                 .postId(post.getId())
-                .boardName(post.getBoard().getName())
+                .board(BoardSimpleDTO.from(post.getBoard()))
                 .title(post.getTitle())
                 .commentableYN(post.isCommentableYN())
                 .viewCnt(post.getViewCount())
