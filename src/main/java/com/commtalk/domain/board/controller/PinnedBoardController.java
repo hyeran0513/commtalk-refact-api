@@ -1,7 +1,7 @@
 package com.commtalk.domain.board.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
-import com.commtalk.domain.board.dto.request.BoardPinRequest;
+import com.commtalk.domain.board.dto.BoardWithPinDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.service.CommentService;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "board", description = "핀고정 게시판 API")
+@Tag(name = "board", description = "게시판 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/boards/pinned")
@@ -46,7 +46,7 @@ public class PinnedBoardController {
 
     @Operation(summary = "게시판 핀고정 및 해제")
     @PostMapping(path = "")
-    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardPinRequest> pinReqList,
+    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardWithPinDTO> pinReqList,
                                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.pinAndUnpinBoards(memberId, pinReqList);

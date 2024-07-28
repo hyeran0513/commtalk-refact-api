@@ -2,8 +2,8 @@ package com.commtalk.domain.board.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.board.dto.BoardDTO;
+import com.commtalk.domain.board.dto.BoardWithPinDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
-import com.commtalk.domain.board.dto.request.BoardPinRequest;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.entity.PinnedBoard;
 import com.commtalk.domain.board.repository.BoardRepository;
@@ -32,7 +32,32 @@ public class BoardServiceImpl implements BoardService {
 
         return boardList.stream()
                 .map(BoardDTO::from)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    public List<BoardWithPinDTO> getAllBoardWithPin(Long memberId) {
+        // 전체 게시판, 핀고정 게시판 조회
+        List<Board> boardList = boardRepo.findAll();
+        List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
+
+        // 핀고정 게시판을 boardId를 key로 하는 Map으로 변환
+        Map<Long, PinnedBoard> pinnedBoardMap = pinnedBoardList.stream()
+                .collect(Collectors.toMap(pinnedBoard -> pinnedBoard.getBoard().getId(), pinnedBoard -> pinnedBoard));
+
+        // 전체 게시판에서 핀고정 게시판과 동일한 게시판의 경우 pinnedBoardId를 포함해서 반환
+        return boardList.stream()
+                .map(board -> {
+                    BoardWithPinDTO boardWithPinDto = BoardWithPinDTO.from(board);
+                    PinnedBoard pinnedBoard = pinnedBoardMap.get(board.getId());
+                    if (pinnedBoard == null) {
+                        boardWithPinDto.setPinnedBoardId(0L);
+                    } else {
+                        boardWithPinDto.setPinnedBoardId(pinnedBoard.getId());
+                    }
+                    return boardWithPinDto;
+                })
+                .toList();
     }
 
     @Override
@@ -56,7 +81,7 @@ public class BoardServiceImpl implements BoardService {
 
         return pinnedBoardList.stream()
                 .map(PinnedBoardDTO::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -67,16 +92,16 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Transactional
-    public void pinAndUnpinBoards(Long memberId, List<BoardPinRequest> pinReqList) {
+    public void pinAndUnpinBoards(Long memberId, List<BoardWithPinDTO> pinReqList) {
         // 핀고정 해제
         unpinBoards(memberId, pinReqList.stream()
-                .map(BoardPinRequest::getBoardId)
+                .map(BoardWithPinDTO::getBoardId)
                 .toList());
 
         // 핀고정
         pinBoards(memberId, pinReqList.stream()
                 .filter(request -> request.getPinnedBoardId() == null || request.getPinnedBoardId() == 0)
-                .map(BoardPinRequest::getBoardId)
+                .map(BoardWithPinDTO::getBoardId)
                 .toList());
     }
 
