@@ -1,5 +1,7 @@
 package com.commtalk.security;
 
+import com.commtalk.common.exception.CustomException;
+import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.member.entity.Member;
 import com.commtalk.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public PrincipalDetails loadUserByUsername(String nickname) {
         Member member = memberRepo.findByNickName(nickname)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with nickname: " + nickname));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return new PrincipalDetails(member);
     }
 }

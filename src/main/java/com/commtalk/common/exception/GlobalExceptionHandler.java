@@ -4,6 +4,7 @@ import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.post.exception.MemberActivitySetException;
 import io.jsonwebtoken.JwtException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,40 +18,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * 사용자 존재 여부에 대한 예외 처리
-     * @param e UsernameNotFoundException 객체
-     * @return  ResponseEntity 객체
-     */
-    @ExceptionHandler(UsernameNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ResponseDTO<String>> handleUsernameNotFoundException(UsernameNotFoundException e) {
-        return ResponseDTO.of(HttpStatus.CONFLICT, e.getMessage());
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ResponseDTO<String>> handleCustomException(CustomException e) {
+        log.error(e);
+        return ResponseDTO.of(HttpStatus.valueOf(e.getErrorCode().getCode()), e.getErrorCode().getMessage());
     }
 
-    /**
-     * 닉네임 중복 여부에 대한 예외 처리
-     * @param e DuplicateNicknameException 객체
-     * @return  ResponseEntity 객체
-     */
-    @ExceptionHandler(DuplicateNicknameException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ResponseDTO<String>> handleDuplicateNicknameException(DuplicateNicknameException e) {
-        return ResponseDTO.of(HttpStatus.CONFLICT, e.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDTO<Map<String, String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, String> errorMap = new HashMap<>();
+        e.getAllErrors().forEach(
+                c -> errorMap.put(((FieldError) c).getField(), c.getDefaultMessage())
+        );
+        return ResponseDTO.of(HttpStatus.BAD_REQUEST, errorMap);
     }
 
-    /**
-     * 비밀번호 확인 여부에 대한 예외 처리
-     * @param e PasswordMismatchException 객체
-     * @return  ResponseEntity 객체
-     */
-    @ExceptionHandler(PasswordMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ResponseDTO<String>> handlePasswordMismatchException(PasswordMismatchException e) {
-        return ResponseDTO.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseDTO<String>> handleException(Exception e) {
+        log.error(e);
+        return ResponseDTO.of(HttpStatus.valueOf(ErrorCode.SERVER_INTERNAL_ERROR.getCode()),
+                ErrorCode.SERVER_INTERNAL_ERROR.getMessage());
     }
 
     /**
@@ -103,16 +94,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleBadCredentialsException() {
         return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없거나 비밀번호가 틀렸습니다.");
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ResponseDTO<Map<String, String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        Map<String, String> errorMap = new HashMap<>();
-        e.getAllErrors().forEach(
-                c -> errorMap.put(((FieldError) c).getField(), c.getDefaultMessage())
-        );
-        return ResponseDTO.of(HttpStatus.BAD_REQUEST, errorMap);
     }
 
 }

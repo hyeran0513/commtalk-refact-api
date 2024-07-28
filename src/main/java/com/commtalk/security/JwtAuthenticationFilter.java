@@ -36,10 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = jwtAuthenticationProvider.resolveToken(request);
-            log.info("Token: " + token);
+            log.info("Token: {}", token);
 
             Authentication authentication = jwtAuthenticationProvider.getAuthentication(token);
-            log.info("Authentication: " + authentication);
+            log.info("Authentication: {}", authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -1,6 +1,8 @@
 package com.commtalk.domain.member.service.impl;
 
+import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.EntityNotFoundException;
+import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.member.dto.MemberDTO;
 import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
 import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
@@ -51,12 +53,12 @@ public class MemberServiceImpl implements MemberService {
     public Long join(MemberJoinRequest joinReq) {
         // 계정 중복 여부 확인
         if (memberRepo.existsByNickname(joinReq.getNickname())) {
-            throw new DuplicateNicknameException("닉네임이 중복됩니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
         // 비밀번호 확인
         if (!joinReq.getPassword().equals(joinReq.getConfirmPassword())) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.MISMATCH_CONFIRM_PASSWORD);
         }
 
         // 회원 생성
@@ -108,11 +110,11 @@ public class MemberServiceImpl implements MemberService {
 
         // 현재 비밀번호 확인
         if (!password.isEqualPassword(updateReq.getCurrentPassword(), passwordEncoder)) {
-            throw new PasswordMismatchException("현재 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.MISMATCH_CURRENT_PASSWORD);
         }
         // 비밀번호 확인
         if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {
-            throw new PasswordMismatchException("확인 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.MISMATCH_CONFIRM_PASSWORD);
         }
 
         // 비밀번호 변경
