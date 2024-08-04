@@ -22,12 +22,22 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 커스템 예외 처리
+     * @param e CustomException 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ResponseDTO<String>> handleCustomException(CustomException e) {
         log.error(e);
         return ResponseDTO.of(HttpStatus.valueOf(e.getErrorCode().getCode()), e.getErrorCode().getMessage());
     }
 
+    /**
+     * 데이터 검증 시 발생한 예외 처리 
+     * @param e MethodArgumentNotValidException 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO<Map<String, String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, String> errorMap = new HashMap<>();
@@ -37,6 +47,11 @@ public class GlobalExceptionHandler {
         return ResponseDTO.of(HttpStatus.BAD_REQUEST, errorMap);
     }
 
+    /**
+     * 나머지 예외 처리
+     * @param e Exception 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDTO<String>> handleException(Exception e) {
         log.error(e);

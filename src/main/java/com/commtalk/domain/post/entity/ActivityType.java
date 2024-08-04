@@ -20,9 +20,9 @@ public class ActivityType extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type_name", nullable = false)
-    private Activity typeName;
+    private TypeName typeName;
 
-    public enum Activity {
+    public enum TypeName {
         POST_LIKE, COMMENT_LIKE, POST_SCRAP
     }
 

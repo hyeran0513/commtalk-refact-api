@@ -7,6 +7,10 @@ INSERT INTO activity_type (type_name) VALUES ('POST_LIKE');
 INSERT INTO activity_type (type_name) VALUES ('COMMENT_LIKE');
 INSERT INTO activity_type (type_name) VALUES ('POST_SCRAP');
 
+-- 파일 유형
+INSERT INTO file_type (type_name) VALUES ('PROFILE');
+INSERT INTO file_type (type_name) VALUES ('POST');
+
 -- 관리자 회원 및 계정
 SET @admin_role_id = (SELECT member_role_id FROM member_role WHERE role_name = 'ROLE_ADMIN');
 

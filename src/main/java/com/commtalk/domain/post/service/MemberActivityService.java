@@ -10,8 +10,8 @@ public interface MemberActivityService {
 
     Map<String, Boolean> getMemberActivitiesByComment(Long memberId, Long commentId);
 
-    void doActivity(ActivityType.Activity type, Long memberId, Long refId);
+    void doActivity(ActivityType.TypeName typeName, Long memberId, Long refId);
 
-    void undoActivity(ActivityType.Activity type, Long memberId, Long refId);
+    void undoActivity(ActivityType.TypeName typeName, Long memberId, Long refId);
 
 }

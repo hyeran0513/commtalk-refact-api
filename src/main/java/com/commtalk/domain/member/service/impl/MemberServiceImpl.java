@@ -62,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 회원 생성
-        MemberRole role = memberRoleRepo.findByRoleName(MemberRole.Role.ROLE_USER)
+        MemberRole role = memberRoleRepo.findByRoleName(MemberRole.RoleName.ROLE_USER)
                 .orElseThrow(() -> new EntityNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
         Member member = Member.create(joinReq, role);
         Member newMember = memberRepo.save(member);

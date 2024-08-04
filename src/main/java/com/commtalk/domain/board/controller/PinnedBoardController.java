@@ -1,6 +1,8 @@
 package com.commtalk.domain.board.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
+import com.commtalk.common.exception.CustomException;
+import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.board.dto.BoardWithPinDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.service.BoardService;
@@ -48,6 +50,9 @@ public class PinnedBoardController {
     @PostMapping(path = "")
     public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardWithPinDTO> pinReqList,
                                                                   HttpServletRequest request) {
+        if (pinReqList != null && pinReqList.size() > 6) {
+            throw new CustomException(ErrorCode.EXCEEDED_PIN_LIMIT);
+        }
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.pinAndUnpinBoards(memberId, pinReqList);
 

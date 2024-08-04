@@ -1,7 +1,8 @@
 USE commtalk_db_v2;
 
 -- DROP TABLE report;
--- DROP TABLE post_file;
+-- DROP TABLE file;
+-- DROP TABLE file_type;
 -- DROP TABLE member_activity;
 -- DROP TABLE activity_type;
 -- DROP TABLE comment;
@@ -127,9 +128,17 @@ CREATE TABLE member_activity (
     FOREIGN KEY (COMMENT_ID) REFERENCES comment(COMMENT_ID)
 );
 
-CREATE TABLE post_file (
+CREATE TABLE file_type (
+    FILE_TYPE_ID bigint AUTO_INCREMENT PRIMARY KEY,
+    TYPE_NAME varchar(40) NOT NULL,
+    CREATED_AT timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    UPDATED_AT timestamp NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE file (
     FILE_ID bigint AUTO_INCREMENT PRIMARY KEY,
-    POST_ID bigint NOT NULL,
+    FILE_TYPE_ID bigint NOT NULL,
+    REF_ID bigint NOT NULL,
     FILE_PATH varchar(255) NOT NULL,
     ORIGINAL_FILE_NAME varchar(255) NOT NULL,
     SAVE_FILE_NAME varchar(255) NOT NULL,
@@ -138,7 +147,7 @@ CREATE TABLE post_file (
     DELETED_YN tinyint(1) DEFAULT 0,
     CREATED_AT timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     UPDATED_AT timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (POST_ID) REFERENCES post(POST_ID)
+    FOREIGN KEY (FILE_TYPE_ID) REFERENCES file_type(FILE_TYPE_ID)
 );
 
 CREATE TABLE report (

@@ -54,26 +54,26 @@ public class MemberActivityServiceImpl implements MemberActivityService {
 
         List<MemberActivity> memberActivities = memberActivityRepo.findByMemberIdAndCommentId(memberId, commentId);
         if (!memberActivities.isEmpty()
-            && memberActivities.get(0).getType().getTypeName() == ActivityType.Activity.COMMENT_LIKE) {
+            && memberActivities.get(0).getType().getTypeName() == ActivityType.TypeName.COMMENT_LIKE) {
             activities.put("likeYN", true);
         }
         return activities;
     }
 
     @Override
-    public void doActivity(ActivityType.Activity type, Long memberId, Long refId) {
+    public void doActivity(ActivityType.TypeName typeName, Long memberId, Long refId) {
         // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByTypeName(type)
+        ActivityType activityType = activityTypeRepo.findByTypeName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
 
         // 회원 활동(좋아요, 스크랩) 저장
         Member member = Member.builder().id(memberId).build();
         MemberActivity activity = null;
-        if (type.name().contains("POST")) {
+        if (typeName.name().contains("POST")) {
             Post post = Post.builder().id(refId).build();
             activity = MemberActivity.create(activityType, member, post);
         }
-        else if (type.name().contains("COMMENT")) {
+        else if (typeName.name().contains("COMMENT")) {
             Comment comment = Comment.builder().id(refId).build();
             activity =  MemberActivity.create(activityType, member, comment);
         }
@@ -85,9 +85,9 @@ public class MemberActivityServiceImpl implements MemberActivityService {
     }
 
     @Override
-    public void undoActivity(ActivityType.Activity type, Long memberId, Long refId) {
+    public void undoActivity(ActivityType.TypeName typeName, Long memberId, Long refId) {
         // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByTypeName(type)
+        ActivityType activityType = activityTypeRepo.findByTypeName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
 
         // 회원 활동(좋아요, 스크랩) 삭제

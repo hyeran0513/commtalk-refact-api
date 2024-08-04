@@ -1,4 +1,4 @@
-package com.commtalk.domain.member.entity;
+package com.commtalk.domain.file.entity;
 
 import com.commtalk.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -10,20 +10,20 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "member_role")
-public class MemberRole extends BaseEntity {
+@Table(name = "file_type")
+public class FileType extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_role_id")
+    @Column(name = "file_type_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_name", nullable = false)
-    private RoleName roleName;
+    @Column(name = "type_name", nullable = false)
+    private TypeName typeName;
 
-    public enum RoleName {
-        ROLE_ADMIN, ROLE_USER
+    public enum TypeName {
+        PROFILE, POST
     }
 
 }
