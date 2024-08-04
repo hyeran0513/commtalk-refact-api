@@ -1,13 +1,11 @@
 package com.commtalk.domain.member.service.impl;
 
 import com.commtalk.common.exception.CustomException;
-import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.member.dto.MemberDTO;
 import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
 import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 import com.commtalk.domain.member.entity.MemberRole;
-import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.member.repository.MemberRoleRepository;
 import com.commtalk.security.JwtAuthenticationProvider;
 import com.commtalk.domain.member.dto.request.MemberJoinRequest;
@@ -63,11 +61,11 @@ public class MemberServiceImpl implements MemberService {
 
         // 회원 생성
         MemberRole role = memberRoleRepo.findByRoleName(MemberRole.RoleName.ROLE_USER)
-                .orElseThrow(() -> new EntityNotFoundException("사용자 계정 권한을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_ROLE_NOT_FOUND));
         Member member = Member.create(joinReq, role);
         Member newMember = memberRepo.save(member);
         if (newMember.getId() == null) {
-            throw new MemberIdNullException("멤버 생성에 실패했습니다.");
+            throw new CustomException(ErrorCode.MEMBER_CREATE_FAILED);
         }
         
         // 회원 패스워드 생성
@@ -81,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberDTO getInfoById(Long memberId) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return MemberDTO.from(member);
     }
@@ -91,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
     public void updateInfo(Long memberId, MemberUpdateRequest updateReq) {
         // 회원 조회
         Member member = memberRepo.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 회원 정보 수정
         member.setMemberName(updateReq.getUsername());
@@ -106,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
     public void updatePassword(Long memberId, MemberPasswordUpdateRequest updateReq) {
         // 회원 비밀번호 조회
         MemberPassword password = passwordRepo.findByMemberId(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자 비밀번호를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PASSWORD_NOT_FOUND));
 
         // 현재 비밀번호 확인
         if (!password.isEqualPassword(updateReq.getCurrentPassword(), passwordEncoder)) {

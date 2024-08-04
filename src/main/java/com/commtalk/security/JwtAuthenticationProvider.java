@@ -1,9 +1,9 @@
 package com.commtalk.security;
 
-import java.security.SecureRandom;
 import java.util.Date;
 
-import com.commtalk.domain.member.exception.MemberIdNullException;
+import com.commtalk.common.exception.CustomException;
+import com.commtalk.common.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,14 +111,14 @@ public class JwtAuthenticationProvider {
 
         Object memberIdObject = claims.get("memberId");
         if (memberIdObject == null) {
-            throw new MemberIdNullException("토큰에서 회원 식별자를 찾을 수 없습니다.");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         long memberId;
         try {
             memberId = ((Integer) memberIdObject).longValue();
         } catch (ClassCastException | NullPointerException e) {
-            throw new MemberIdNullException("토큰에 잘못된 형식의 회원 식별자가 있습니다.");
+            throw new CustomException(ErrorCode.INVALID_MEMBER);
         }
 
         return memberId;

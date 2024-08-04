@@ -1,14 +1,12 @@
 package com.commtalk.common.exception;
 
 import com.commtalk.common.dto.ResponseDTO;
-import com.commtalk.domain.member.exception.*;
 import com.commtalk.domain.post.exception.MemberActivitySetException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -60,17 +58,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 회원 아이디가 null인 경우에 대한 예외 처리
-     * @param e MemberIdNullException 객체
-     * @return  ResponseEntity 객체
-     */
-    @ExceptionHandler(MemberIdNullException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ResponseDTO<String>> handleMemberIdNullException(MemberIdNullException e) {
-        return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    }
-
-    /**
      * 회원 활동 객체 구성 중 발생한 예외 처리
      * @param e MemberActivitySetException 객체
      * @return  ResponseEntity 객체
@@ -108,7 +95,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleBadCredentialsException() {
-        return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없거나 비밀번호가 틀렸습니다.");
+        return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "회원을 찾을 수 없거나 비밀번호가 틀렸습니다.");
     }
 
 }

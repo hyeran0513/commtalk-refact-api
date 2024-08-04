@@ -48,22 +48,14 @@ public class PinnedBoardController {
 
     @Operation(summary = "게시판 핀고정 및 해제")
     @PostMapping(path = "")
-    public ResponseEntity<List<PinnedBoardDTO>> pinAndUnpinBoards(@RequestBody @Valid List<BoardWithPinDTO> pinReqList,
+    public ResponseEntity<ResponseDTO<String>> pinAndUnpinBoards(@RequestBody @Valid List<BoardWithPinDTO> pinReqList,
                                                                   HttpServletRequest request) {
         if (pinReqList != null && pinReqList.size() > 6) {
             throw new CustomException(ErrorCode.EXCEEDED_PIN_LIMIT);
         }
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.pinAndUnpinBoards(memberId, pinReqList);
-
-        List<PinnedBoardDTO> pinnedBoardDtoList = boardSvc.getPinnedBoards(memberId); // 변경된 핀고정 게시판 목록 조회
-        pinnedBoardDtoList
-                .forEach(pb -> {
-                    pb.setPosts(postSvc.getPostPreviewsByBoard(pb.getBoardId(), 2));
-                    pb.getPosts()
-                            .forEach(p -> p.setCommentCnt(commentSvc.getCommentCountByPost(p.getPostId()))); // 게시글 댓글 수 조회
-                }); // 핀고정 게시글 미리보기 조회
-        return ResponseEntity.ok(pinnedBoardDtoList);
+        return ResponseDTO.of(HttpStatus.OK, "게시판 핀고정 및 해제를 완료했습니다.");
     }
 
     @Operation(summary = "핀고정 게시판 순서 변경")
