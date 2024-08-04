@@ -1,6 +1,7 @@
 package com.commtalk.domain.file.entity;
 
 import com.commtalk.common.entity.BaseEntity;
+import com.commtalk.domain.file.dto.request.FileCreateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,20 +28,34 @@ public class File extends BaseEntity {
     @Column(name = "ref_id")
     private Long refId;
 
-    @Column(name = "file_path")
+    @Column(name = "file_path", nullable = false)
     private String filePath;
 
     @Column(name = "original_file_name")
     private String originalFileName;
 
-    @Column(name = "save_file_name")
+    @Column(name = "save_file_name", nullable = false)
     private String saveFileName;
 
     @Column(name = "file_ext")
     private String fileExt;
 
+    @Column(name = "file_size")
+    private long fileSize;
+
     @Column(name = "deleted_yn")
     private boolean deletedYN;
 
+    public static File create(FileType type, Long refId, FileCreateRequest createReq) {
+        return File.builder()
+                .type(type)
+                .refId(refId)
+                .filePath(createReq.getFilePath())
+                .originalFileName(createReq.getOriginalFileName())
+                .saveFileName(createReq.getSaveFileName())
+                .fileExt(createReq.getFileExt())
+                .fileSize(createReq.getFileSize())
+                .build();
+    }
 
 }

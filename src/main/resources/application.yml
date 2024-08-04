@@ -22,7 +22,7 @@ spring:
   servlet:
     multipart:
       file-size-threshold: 1MB
-      location: C:/commtalk_data/
+      location: 'C:/commtalk_data/'
       max-file-size: 100MB
       max-request-size: 100MB
 
