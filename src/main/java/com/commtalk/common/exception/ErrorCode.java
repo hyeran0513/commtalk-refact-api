@@ -21,7 +21,11 @@ public enum ErrorCode {
     INVALID_MEMBER(500, "유효하지 않은 회원 식별자입니다."),
 
     // 게시판 에러
-    EXCEEDED_PIN_LIMIT(400, "핀 고정 게시판은 6개를 넘을 수 없습니다.");
+    EXCEEDED_PIN_LIMIT(400, "핀 고정 게시판은 6개를 넘을 수 없습니다."),
+
+    // 파일 에러
+    FILE_NOT_FOUND(500, "파일을 읽을 수 없거나 존재하지 않습니다"),
+    INVALID_URL(500, "유효하지 않은 파일 URL입니다.");
 
     private final int code;
     private final String message;

@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasAnyAuthority(MemberRole.RoleName.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
                         .requestMatchers("/api/v1/boards/pinned/**").authenticated()
+                        .requestMatchers("/api/v1/files/profile/**").authenticated()
                         .requestMatchers(HttpMethod.GET, getPermitList).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
