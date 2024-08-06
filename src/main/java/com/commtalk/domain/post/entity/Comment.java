@@ -46,6 +46,7 @@ public class Comment extends BaseEntity {
     @Column(name = "deleted_yn")
     private boolean deletedYN;
 
+    @Setter
     @Column(name = "like_count")
     private long likeCount;
 

@@ -106,6 +106,10 @@ public class JwtAuthenticationProvider {
      * @return memberId
      */
     public Long getMemberId(HttpServletRequest request) {
+        if (request.getHeader("Authorization") == null) {
+            return null;
+        }
+
         String token = resolveToken(request);
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 

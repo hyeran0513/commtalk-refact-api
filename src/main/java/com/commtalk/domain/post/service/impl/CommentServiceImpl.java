@@ -6,12 +6,17 @@ import com.commtalk.domain.post.dto.ChildCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
+import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.entity.Comment;
+import com.commtalk.domain.post.entity.MemberActivity;
 import com.commtalk.domain.post.entity.Post;
 import com.commtalk.domain.post.exception.CommentIdNullException;
 import com.commtalk.common.exception.PermissionException;
+import com.commtalk.domain.post.repository.ActivityTypeRepository;
 import com.commtalk.domain.post.repository.CommentRepository;
+import com.commtalk.domain.post.repository.MemberActivityRepository;
 import com.commtalk.domain.post.service.CommentService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +30,17 @@ import java.util.Map;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepo;
+    private final ActivityTypeRepository activityTypeRepo;
+    private final MemberActivityRepository activityRepo;
+
+    private Long cLikeTypeId;
+
+    @PostConstruct
+    private void init() {
+        ActivityType activityType = activityTypeRepo.findByTypeName(ActivityType.TypeName.COMMENT_LIKE)
+                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
+        this.cLikeTypeId = activityType.getId();
+    }
 
     @Override
     public List<ParentCommentDTO> getCommentsByPost(Long postId) {
@@ -33,11 +49,36 @@ public class CommentServiceImpl implements CommentService {
 
         for (Comment comment : commentList) {
             if (comment.getParent() == null) {
-                commentDtoMap.put(comment.getId(), ParentCommentDTO.from(comment));
+                commentDtoMap.put(comment.getId(), ParentCommentDTO.from(comment, false));
             } else {
                 ParentCommentDTO parentCommentDto = commentDtoMap.get(comment.getParent().getId());
                 if (parentCommentDto != null) {
-                    parentCommentDto.addChildComment(ChildCommentDTO.from(comment));
+                    parentCommentDto.addChildComment(ChildCommentDTO.from(comment, false));
+                    commentDtoMap.put(comment.getParent().getId(), parentCommentDto);
+                }
+            }
+        }
+
+        return commentDtoMap.values().stream()
+                .peek(commentDto -> commentDto.setChildCount((commentDto.getChildren() != null) ? commentDto.getChildren().size() : 0))
+                .toList();
+    }
+
+    @Override
+    public List<ParentCommentDTO> getCommentsByPost(Long postId, Long memberId) {
+        List<Object[]> commentList = commentRepo.findByPostIdAndDeletedYN(postId, false, memberId, ActivityType.TypeName.COMMENT_LIKE);
+        Map<Long, ParentCommentDTO> commentDtoMap = new HashMap<>();
+
+        for (Object[] commentObj : commentList) {
+            Comment comment = (Comment) commentObj[0];
+            boolean likeYN = (boolean) commentObj[1];
+
+            if (comment.getParent() == null) {
+                commentDtoMap.put(comment.getId(), ParentCommentDTO.from(comment, likeYN));
+            } else {
+                ParentCommentDTO parentCommentDto = commentDtoMap.get(comment.getParent().getId());
+                if (parentCommentDto != null) {
+                    parentCommentDto.addChildComment(ChildCommentDTO.from(comment, likeYN));
                     commentDtoMap.put(comment.getParent().getId(), parentCommentDto);
                 }
             }
@@ -104,6 +145,48 @@ public class CommentServiceImpl implements CommentService {
         comment.setDeletedYN(true);
 
         // 수정된 댓글 저장
+        commentRepo.save(comment);
+
+        // 댓글 Id를 참조하는 좋아요 전체 삭제
+//        activityRepo.deleteAllByTypeIdAndRefId(cLikeTypeId, commentId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isLikeComment(Long memberId, Long commentId) {
+        return activityRepo.existsByTypeIdAndMemberIdAndRefId(cLikeTypeId, memberId, commentId);
+    }
+
+    @Override
+    @Transactional
+    public void likeComment(Long memberId, Long commentId) {
+        // 회원 활동 저장
+        Member member = Member.builder().id(memberId).build();
+        ActivityType activityType = ActivityType.builder().id(cLikeTypeId).build();
+        MemberActivity activity = MemberActivity.create(activityType, member, commentId);
+        activityRepo.save(activity);
+
+        // 댓글 조회
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+
+        // 댓글 좋아요 수 업데이트
+        comment.setLikeCount(comment.getLikeCount() + 1);
+        commentRepo.save(comment);
+    }
+
+    @Override
+    @Transactional
+    public void unlikeComment(Long memberId, Long commentId) {
+        // 회원 활동 삭제
+        activityRepo.deleteByTypeIdAndMemberIdAndRefId(cLikeTypeId, memberId, commentId);
+
+        // 댓글 조회
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+
+        // 댓글 좋아요 수 업데이트
+        comment.setLikeCount(comment.getLikeCount() - 1);
         commentRepo.save(comment);
     }
 

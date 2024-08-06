@@ -41,6 +41,9 @@ public class ParentCommentDTO {
     @Schema(description = "대댓글 수")
     private long childCount;
 
+    @Schema(description = "좋아요 여부")
+    private boolean likeYN;
+
     public void addChildComment(ChildCommentDTO childCommentDto) {
         if (children == null) {
             children = new ArrayList<>();
@@ -48,7 +51,7 @@ public class ParentCommentDTO {
         children.add(childCommentDto);
     }
 
-    public static ParentCommentDTO from(Comment comment) {
+    public static ParentCommentDTO from(Comment comment, boolean likeYN) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return ParentCommentDTO.builder()
@@ -58,6 +61,7 @@ public class ParentCommentDTO {
                 .anonymousYN(comment.isAnonymousYN())
                 .likeCount(comment.getLikeCount())
                 .updatedAt(sdf.format(comment.getUpdatedAt()))
+                .likeYN(likeYN)
                 .build();
     }
 

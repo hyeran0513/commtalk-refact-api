@@ -34,7 +34,10 @@ public class ChildCommentDTO {
     @Schema(description = "최근 수정 일시")
     private String updatedAt;
 
-    public static ChildCommentDTO from(Comment comment) {
+    @Schema(description = "좋아요 여부")
+    private boolean likeYN;
+
+    public static ChildCommentDTO from(Comment comment, boolean likeYN) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return ChildCommentDTO.builder()
@@ -45,6 +48,7 @@ public class ChildCommentDTO {
                 .anonymousYN(comment.isAnonymousYN())
                 .likeCount(comment.getLikeCount())
                 .updatedAt(sdf.format(comment.getUpdatedAt()))
+                .likeYN(likeYN)
                 .build();
     }
 

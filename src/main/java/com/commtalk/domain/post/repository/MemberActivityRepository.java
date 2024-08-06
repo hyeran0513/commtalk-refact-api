@@ -4,16 +4,16 @@ import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.entity.MemberActivity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface MemberActivityRepository extends JpaRepository<MemberActivity, Long> {
 
-    List<MemberActivity> findByMemberIdAndPostId(Long memberId, Long postId);
+    Optional<MemberActivity> findByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
 
-    List<MemberActivity> findByMemberIdAndCommentId(Long memberId, Long commentId);
+    boolean existsByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
 
-    void deleteByMemberIdAndPostIdAndType(Long memberId, Long postId, ActivityType type);
+    void deleteByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
 
-    void deleteByMemberIdAndCommentIdAndType(Long memberId, Long commentId, ActivityType type);
+    void deleteAllByTypeIdAndRefId(Long typeId, Long refId);
 
 }

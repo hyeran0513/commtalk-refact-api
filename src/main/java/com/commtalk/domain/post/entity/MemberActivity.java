@@ -31,31 +31,18 @@ public class MemberActivity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
+    @Column(name = "ref_id", nullable = false)
+    private Long refId;
 
     @Column(name = "created_at")
     @CreatedDate
     private Timestamp createdAt;
 
-    public static MemberActivity create(ActivityType type, Member member, Post post) {
+    public static MemberActivity create(ActivityType type, Member member, Long refId) {
         return MemberActivity.builder()
                 .type(type)
                 .member(member)
-                .post(post)
-                .build();
-    }
-
-    public static MemberActivity create(ActivityType type, Member member, Comment comment) {
-        return MemberActivity.builder()
-                .type(type)
-                .member(member)
-                .comment(comment)
+                .refId(refId)
                 .build();
     }
 
