@@ -6,9 +6,10 @@ import com.commtalk.domain.post.dto.PostPreviewDTO;
 import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.dto.PostPageDTO;
 import com.commtalk.domain.board.entity.Board;
-import com.commtalk.domain.post.entity.Post;
-import com.commtalk.domain.post.entity.PostHashtag;
+import com.commtalk.domain.post.entity.*;
 import com.commtalk.domain.post.exception.PostIdNullException;
+import com.commtalk.domain.post.repository.ActivityTypeRepository;
+import com.commtalk.domain.post.repository.MemberActivityRepository;
 import com.commtalk.domain.post.repository.PostHashtagRepository;
 import com.commtalk.domain.post.repository.PostRepository;
 import com.commtalk.domain.post.service.PostService;
@@ -28,6 +29,8 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepo;
     private final PostHashtagRepository hashtagRepo;
+    private final ActivityTypeRepository activityTypeRepo;
+    private final MemberActivityRepository activityRepo;
 
     @Override
     public PostPageDTO getPosts(Pageable pageable) {
@@ -68,7 +71,27 @@ public class PostServiceImpl implements PostService {
         // 조회수 증가
         post.setViewCount(post.getViewCount() + 1);
         postRepo.save(post);
-        return PostDTO.from(post, hashtags);
+        return PostDTO.from(post, hashtags, false, false);
+    }
+
+    @Override
+    @Transactional
+    public PostDTO getPost(Long postId, Long memberId) {
+        // 게시글 조회
+        Object[] postObj = postRepo.findById(postId, memberId, ActivityType.TypeName.POST_LIKE, ActivityType.TypeName.POST_SCRAP)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        postObj = (Object[]) postObj[0];
+
+        List<PostHashtag> hashtags = hashtagRepo.findAllByPostId(postId);
+        Post post = (Post) postObj[0];
+        boolean likeYN = postObj[1] != null;
+        boolean scrapYN = postObj[2] != null;
+
+        // 조회수 증가
+        post.setViewCount(post.getViewCount() + 1);
+        postRepo.save(post);
+
+        return PostDTO.from(post, hashtags, likeYN, scrapYN);
     }
 
     @Override
@@ -118,6 +141,49 @@ public class PostServiceImpl implements PostService {
             postHashtag = PostHashtag.create(newPost, hashtag);
             hashtagRepo.save(postHashtag);
         }
+    }
+
+    @Override
+    public boolean isLikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
+        return activityRepo.existsByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
+    }
+
+    @Override
+    public void likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
+        // 회원 활동 유형 조회
+        ActivityType activityType = activityTypeRepo.findByName(typeName)
+                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
+
+        // 회원 활동 저장
+        Member member = Member.builder().id(memberId).build();
+        MemberActivity activity = MemberActivity.create(activityType, member, postId);
+        activityRepo.save(activity);
+
+        // 게시글 좋아요(스크랩) 수 업데이트
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (typeName == ActivityType.TypeName.POST_LIKE) {
+            post.setLikeCount(post.getLikeCount() + 1);
+        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
+            post.setScrapCount(post.getScrapCount() + 1);
+        }
+        postRepo.save(post);
+    }
+
+    @Override
+    public void unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
+        // 회원 활동 삭제
+        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
+
+        // 게시글 좋아요(스크랩) 수 업데이트
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (typeName == ActivityType.TypeName.POST_LIKE) {
+            post.setLikeCount(post.getLikeCount() - 1);
+        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
+            post.setScrapCount(post.getScrapCount() - 1);
+        }
+        postRepo.save(post);
     }
 
 }

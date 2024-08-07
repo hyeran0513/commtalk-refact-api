@@ -11,7 +11,6 @@ import com.commtalk.domain.file.entity.FileType;
 import com.commtalk.domain.file.repository.FileRepository;
 import com.commtalk.domain.file.repository.FileTypeRepository;
 import com.commtalk.domain.file.service.FileService;
-import com.commtalk.domain.post.entity.ActivityType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

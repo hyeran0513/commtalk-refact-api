@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface ActivityTypeRepository extends JpaRepository<ActivityType, Long> {
 
-    Optional<ActivityType> findByTypeName(ActivityType.TypeName typeName);
+    Optional<ActivityType> findByName(ActivityType.TypeName typeName);
 
 }

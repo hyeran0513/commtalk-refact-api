@@ -58,7 +58,13 @@ public class PostDTO {
     @Schema(description = "해시태그 목록")
     private List<PostHashtagDTO> hashtags;
 
-    public static PostDTO from(Post post, List<PostHashtag> postHashtagList) {
+    @Schema(description = "좋아요 여부")
+    private boolean likeYN;
+
+    @Schema(description = "스크랩 여부")
+    private boolean scrapYN;
+
+    public static PostDTO from(Post post, List<PostHashtag> postHashtagList, boolean likeYN, boolean scrapYN) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return PostDTO.builder()
@@ -73,6 +79,8 @@ public class PostDTO {
                 .likeCnt(post.getLikeCount())
                 .scrapCnt(post.getScrapCount())
                 .hashtags(postHashtagList.stream().map(PostHashtagDTO::from).toList())
+                .likeYN(likeYN)
+                .scrapYN(scrapYN)
                 .build();
     }
 

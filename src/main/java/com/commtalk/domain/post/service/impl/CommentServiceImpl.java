@@ -33,15 +33,6 @@ public class CommentServiceImpl implements CommentService {
     private final ActivityTypeRepository activityTypeRepo;
     private final MemberActivityRepository activityRepo;
 
-    private Long likeTypeId;
-
-    @PostConstruct
-    private void init() {
-        ActivityType activityType = activityTypeRepo.findByTypeName(ActivityType.TypeName.COMMENT_LIKE)
-                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
-        this.likeTypeId = activityType.getId();
-    }
-
     @Override
     public List<ParentCommentDTO> getCommentsByPost(Long postId) {
         List<Comment> commentList = commentRepo.findByPostIdAndDeletedYN(postId, false);
@@ -66,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<ParentCommentDTO> getCommentsByPost(Long postId, Long memberId) {
-        List<Object[]> commentList = commentRepo.findByPostIdAndDeletedYN(postId, memberId, likeTypeId, false);
+        List<Object[]> commentList = commentRepo.findByPostIdAndDeletedYN(postId, false, memberId, ActivityType.TypeName.COMMENT_LIKE);
         Map<Long, ParentCommentDTO> commentDtoMap = new HashMap<>();
 
         for (Object[] commentObj : commentList) {
@@ -148,20 +139,23 @@ public class CommentServiceImpl implements CommentService {
         commentRepo.save(comment);
 
         // 댓글 Id를 참조하는 좋아요 전체 삭제
-//        activityRepo.deleteAllByTypeIdAndRefId(cLikeTypeId, commentId);
+//        activityRepo.deleteAllByRefIdAndTypeName(commentId, ActivityType.TypeName.COMMENT_LIKE);
     }
 
     @Override
     public boolean isLikeComment(Long memberId, Long commentId) {
-        return activityRepo.existsByTypeIdAndMemberIdAndRefId(likeTypeId, memberId, commentId);
+        return activityRepo.existsByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
     }
 
     @Override
     @Transactional
     public void likeComment(Long memberId, Long commentId) {
+        // 회원 활동 유형 조회
+        ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.COMMENT_LIKE)
+                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
+
         // 회원 활동 저장
         Member member = Member.builder().id(memberId).build();
-        ActivityType activityType = ActivityType.builder().id(likeTypeId).build();
         MemberActivity activity = MemberActivity.create(activityType, member, commentId);
         activityRepo.save(activity);
 
@@ -176,7 +170,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void unlikeComment(Long memberId, Long commentId) {
         // 회원 활동 삭제
-        activityRepo.deleteByTypeIdAndMemberIdAndRefId(likeTypeId, memberId, commentId);
+        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
 
         // 댓글 좋아요 수 업데이트
         Comment comment = commentRepo.findById(commentId)

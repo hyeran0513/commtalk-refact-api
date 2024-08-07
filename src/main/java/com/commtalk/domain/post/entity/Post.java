@@ -49,9 +49,11 @@ public class Post extends BaseEntity {
     @Column(name = "view_count")
     private long viewCount;
 
+    @Setter
     @Column(name = "like_count")
     private long likeCount;
 
+    @Setter
     @Column(name = "scrap_count")
     private long scrapCount;
 

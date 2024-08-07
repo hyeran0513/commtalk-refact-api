@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO<Map<String, String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error(e);
         Map<String, String> errorMap = new HashMap<>();
         e.getAllErrors().forEach(
                 c -> errorMap.put(((FieldError) c).getField(), c.getDefaultMessage())

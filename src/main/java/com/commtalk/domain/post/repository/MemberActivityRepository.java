@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface MemberActivityRepository extends JpaRepository<MemberActivity, Long> {
 
-    Optional<MemberActivity> findByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
+    Optional<MemberActivity> findByMemberIdAndRefIdAndTypeName(Long memberId, Long refId, ActivityType.TypeName typeName);
 
-    boolean existsByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
+    boolean existsByMemberIdAndRefIdAndTypeName(Long memberId, Long refId, ActivityType.TypeName typeName);
 
-    void deleteByTypeIdAndMemberIdAndRefId(Long typeId, Long memberId, Long refId);
+    void deleteByMemberIdAndRefIdAndTypeName(Long memberId, Long refId, ActivityType.TypeName typeName);
 
-    void deleteAllByTypeIdAndRefId(Long typeId, Long refId);
+    void deleteAllByRefIdAndTypeName(Long refId, ActivityType.TypeName typeName);
 
 }
