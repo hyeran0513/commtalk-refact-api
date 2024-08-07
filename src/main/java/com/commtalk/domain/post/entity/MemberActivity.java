@@ -23,7 +23,7 @@ public class MemberActivity {
     @Column(name = "activity_id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "activity_type_id", nullable = false)
     private ActivityType type;
 

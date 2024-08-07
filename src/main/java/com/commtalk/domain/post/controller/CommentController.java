@@ -37,11 +37,11 @@ public class CommentController {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
         List<ParentCommentDTO> commentDtoList;
-//        if (memberId == null) {
+        if (memberId == null) {
             commentDtoList = commentSvc.getCommentsByPost(postId); // 게시글 댓글 목록 조회
-//        } else {
-//            commentDtoList = commentSvc.getCommentsByPost(postId, memberId); // 게시글 댓글 목록 조회 (좋아요 여부 포함)
-//        }
+        } else {
+            commentDtoList = commentSvc.getCommentsByPost(postId, memberId); // 게시글 댓글 목록 조회 (좋아요 여부 포함)
+        }
         return ResponseEntity.ok(commentDtoList);
     }
 

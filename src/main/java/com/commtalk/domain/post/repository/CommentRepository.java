@@ -17,11 +17,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByPostIdAndDeletedYN(Long postId, boolean deletedYN);
 
-    @Query("SELECT c, CASE WHEN ma.id IS NOT NULL THEN TRUE ELSE FALSE END " +
-            "FROM Comment c " +
-            "LEFT JOIN MemberActivity ma ON c.id = ma.refId AND ma.member.id = :memberId AND ma.type.typeName = :typeName " +
+    @Query("SELECT DISTINCT c, ma.id FROM Comment c " +
+            "LEFT JOIN MemberActivity ma ON c.id = ma.refId AND ma.member.id = :memberId AND ma.type.id = :typeId " +
             "WHERE c.post.id = :postId AND c.deletedYN = :deletedYN")
-    List<Object[]> findByPostIdAndDeletedYN(Long postId, boolean deletedYN, Long memberId, ActivityType.TypeName typeName);
+    List<Object[]> findByPostIdAndDeletedYN(Long postId, Long memberId, Long typeId, boolean deletedYN);
 
     Long countByPostIdAndDeletedYN(Long postId, boolean deletedYN);
 
