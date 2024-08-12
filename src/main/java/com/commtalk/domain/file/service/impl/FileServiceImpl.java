@@ -5,7 +5,6 @@ import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.common.util.CommonFileUtils;
 import com.commtalk.domain.file.dto.request.FileCreateRequest;
-import com.commtalk.domain.file.dto.request.FileSimpleDTO;
 import com.commtalk.domain.file.entity.File;
 import com.commtalk.domain.file.entity.FileType;
 import com.commtalk.domain.file.repository.FileRepository;
@@ -18,7 +17,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +32,9 @@ public class FileServiceImpl implements FileService {
 
     @Value("${spring.servlet.multipart.location}")
     private String baseDirPath;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     @Override
     public void storeFile(FileType.TypeName typeName, Long refId, MultipartFile multipartFile) {
@@ -64,7 +65,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileSimpleDTO getFilePath(FileType.TypeName typeName, Long refId) {
+    public String getFileUrl(FileType.TypeName typeName, Long refId) {
         // 파일 유형 조회
         FileType fileType = fileTypeRepo.findByTypeName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
@@ -73,21 +74,11 @@ public class FileServiceImpl implements FileService {
         File file = fileRepo.findByTypeAndRefId(fileType, refId)
                 .orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다."));
 
-        FileSimpleDTO fileDto = FileSimpleDTO.of(file);
-        try {
-            Path path = Paths.get(file.getFilePath());
-            Resource resource = new UrlResource(path.toUri());
-            fileDto.setFileUrl(resource.getURI().toString());
-        } catch (MalformedURLException e) {
-            throw new CustomException(ErrorCode.INVALID_URL);
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_NOT_FOUND);
-        }
-        return fileDto;
+        return baseUrl + "/files/" + file.getId();
     }
 
     @Override
-    public List<FileSimpleDTO> getFilePaths(FileType.TypeName typeName, Long refId) {
+    public List<String> getFileUrls(FileType.TypeName typeName, Long refId) {
         // 파일 유형 조회
         FileType fileType = fileTypeRepo.findByTypeName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
@@ -95,23 +86,27 @@ public class FileServiceImpl implements FileService {
         // 파일 리스트 조회
         List<File> files = fileRepo.findAllByTypeAndRefId(fileType, refId);
 
-        List<FileSimpleDTO> fileDtoList = new ArrayList<>();
-        FileSimpleDTO fileDto;
-        Path path;
-        Resource resource;
+        List<String> fileUrls = new ArrayList<>();
         for (File file : files) {
-            fileDto = FileSimpleDTO.of(file);
-            try {
-                path = Paths.get(file.getFilePath());
-                resource = new UrlResource(path.toUri());
-                fileDto.setFileUrl(resource.getURI().toString());
-                fileDtoList.add(fileDto);
-            } catch (MalformedURLException e) {
-                throw new CustomException(ErrorCode.INVALID_URL);
-            } catch (IOException e) {
-                throw new CustomException(ErrorCode.FILE_NOT_FOUND);
-            }
+            fileUrls.add(baseUrl + "/files/" + file.getId());
         }
-        return fileDtoList;
+        return fileUrls;
     }
+
+    @Override
+    public Resource getFile(Long fileId) {
+        // 파일 조회
+        File file = fileRepo.findById(fileId)
+                .orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다."));
+
+        Resource resource;
+        try {
+            Path path = Paths.get(file.getFilePath());
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new CustomException(ErrorCode.INVALID_URL);
+        }
+        return resource;
+    }
+
 }

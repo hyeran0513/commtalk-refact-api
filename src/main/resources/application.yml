@@ -26,6 +26,9 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
+base:
+  url: 'http://localhost:8080/api/v1'
+
 jwt:
   secret: NF3Le1cZvVXk3ZRcvNX0C4G8fVRS0sTOeTk4m8fgz08dMnsA9Nzz2qQAVbuqzYxH
   expiration: 3600000

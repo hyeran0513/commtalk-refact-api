@@ -1,7 +1,7 @@
 package com.commtalk.domain.file.service;
 
-import com.commtalk.domain.file.dto.request.FileSimpleDTO;
 import com.commtalk.domain.file.entity.FileType;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -12,8 +12,10 @@ public interface FileService {
 
     void storeFiles(FileType.TypeName typeName, Long refId, List<MultipartFile> files);
 
-    FileSimpleDTO getFilePath(FileType.TypeName typeName, Long refId);
+    String getFileUrl(FileType.TypeName typeName, Long refId);
 
-    List<FileSimpleDTO> getFilePaths(FileType.TypeName typeName, Long refId);
+    List<String> getFileUrls(FileType.TypeName typeName, Long refId);
+
+    Resource getFile(Long fileId);
 
 }
