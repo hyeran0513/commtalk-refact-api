@@ -98,6 +98,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void updatePassword(Long memberId, MemberPasswordUpdateRequest updateReq) {
         // 비밀번호 확인
         if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {

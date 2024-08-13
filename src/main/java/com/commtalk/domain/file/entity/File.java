@@ -21,7 +21,7 @@ public class File extends BaseEntity {
     @Column(name = "file_id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "file_type_id", nullable = false)
     private FileType type;
 
