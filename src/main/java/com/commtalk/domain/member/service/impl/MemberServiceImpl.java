@@ -3,13 +3,10 @@ package com.commtalk.domain.member.service.impl;
 import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
-import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
+import com.commtalk.domain.member.dto.request.*;
 import com.commtalk.domain.member.entity.MemberRole;
 import com.commtalk.domain.member.repository.MemberRoleRepository;
 import com.commtalk.security.JwtAuthenticationProvider;
-import com.commtalk.domain.member.dto.request.MemberJoinRequest;
-import com.commtalk.domain.member.dto.request.MemberLoginRequest;
 import com.commtalk.domain.member.entity.MemberPassword;
 import com.commtalk.domain.member.repository.MemberPasswordRepository;
 import com.commtalk.domain.member.service.MemberService;
@@ -102,24 +99,32 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void updatePassword(Long memberId, MemberPasswordUpdateRequest updateReq) {
-        // 회원 비밀번호 조회
-        MemberPassword password = passwordRepo.findByMemberId(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PASSWORD_NOT_FOUND));
-
-        // 현재 비밀번호 확인
-        if (!password.isEqualPassword(updateReq.getCurrentPassword(), passwordEncoder)) {
-            throw new CustomException(ErrorCode.MISMATCH_CURRENT_PASSWORD);
-        }
         // 비밀번호 확인
         if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {
             throw new CustomException(ErrorCode.MISMATCH_CONFIRM_PASSWORD);
         }
 
-        // 비밀번호 변경
+        // 회원 비밀번호 조회
+        MemberPassword password = passwordRepo.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PASSWORD_NOT_FOUND));
+
+        // 비밀번호 수정
         password.setNewPassword(updateReq.getNewPassword(), passwordEncoder);
 
         // 변경된 비밀번호 저장
         passwordRepo.save(password);
+    }
+
+    @Override
+    public void confirmPassword(Long memberId, String currentPassword) {
+        // 회원 비밀번호 조회
+        MemberPassword password = passwordRepo.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PASSWORD_NOT_FOUND));
+
+        // 현재 비밀번호 확인
+        if (!password.isEqualPassword(currentPassword, passwordEncoder)) {
+            throw new CustomException(ErrorCode.MISMATCH_CURRENT_PASSWORD);
+        }
     }
 
 }

@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-
 @Getter
 @Builder
 @Schema(description = "파일 생성 정보")

@@ -1,10 +1,7 @@
 package com.commtalk.domain.member.service;
 
-import com.commtalk.domain.member.dto.request.MemberJoinRequest;
-import com.commtalk.domain.member.dto.request.MemberLoginRequest;
+import com.commtalk.domain.member.dto.request.*;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
-import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 
 public interface MemberService {
 
@@ -17,5 +14,7 @@ public interface MemberService {
     void updateInfo(Long memberId, MemberUpdateRequest updateReq);
 
     void updatePassword(Long memberId, MemberPasswordUpdateRequest updateReq);
+
+    void confirmPassword(Long memberId, String currentPassword);
 
 }

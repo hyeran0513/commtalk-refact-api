@@ -124,7 +124,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void createPost(Long memberId, Long boardId, PostCreateRequest createReq) {
+    public Long createPost(Long memberId, Long boardId, PostCreateRequest createReq) {
         // 게시글 생성
         Member member = Member.builder().id(memberId).build();
         Board board = Board.builder().id(boardId).build();
@@ -141,6 +141,8 @@ public class PostServiceImpl implements PostService {
             postHashtag = PostHashtag.create(newPost, hashtag);
             hashtagRepo.save(postHashtag);
         }
+
+        return newPost.getId();
     }
 
     @Override

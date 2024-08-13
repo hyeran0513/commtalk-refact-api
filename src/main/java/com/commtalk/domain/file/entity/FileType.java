@@ -20,7 +20,7 @@ public class FileType extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type_name", nullable = false)
-    private TypeName typeName;
+    private TypeName name;
 
     public enum TypeName {
         PROFILE, POST

@@ -1,11 +1,8 @@
 package com.commtalk.domain.member.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
-import com.commtalk.domain.member.dto.request.MemberJoinRequest;
-import com.commtalk.domain.member.dto.request.MemberLoginRequest;
+import com.commtalk.domain.member.dto.request.*;
 import com.commtalk.domain.member.dto.MemberDTO;
-import com.commtalk.domain.member.dto.request.MemberPasswordUpdateRequest;
-import com.commtalk.domain.member.dto.request.MemberUpdateRequest;
 import com.commtalk.domain.member.service.MemberService;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.security.JwtAuthenticationProvider;
@@ -70,8 +67,18 @@ public class MemberController {
     public ResponseEntity<ResponseDTO<String>> updatePassword(@RequestBody @Valid MemberPasswordUpdateRequest updateReq,
                                                               HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        memberSvc.confirmPassword(memberId, updateReq.getCurrentPassword()); // 현재 비밀번호 확인
         memberSvc.updatePassword(memberId, updateReq);  // 비밀번호 변경
         return ResponseDTO.of(HttpStatus.OK, "비밀번호 변경에 성공했습니다.");
+    }
+
+    @Operation(summary = "현재 비밀번호 확인")
+    @PostMapping(path = "/password/confirm")
+    public ResponseEntity<ResponseDTO<String>> confirmPassword(@RequestBody @Valid MemberPasswordConfirmRequest confirmReq,
+                                                               HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        memberSvc.confirmPassword(memberId, confirmReq.getCurrentPassword()); // 현재 비밀번호 확인
+        return ResponseDTO.of(HttpStatus.OK, "비밀번호 확인이 완료되었습니다.");
     }
 
 }

@@ -12,6 +12,8 @@ public interface FileService {
 
     void storeFiles(FileType.TypeName typeName, Long refId, List<MultipartFile> files);
 
+    void deleteFiles(FileType.TypeName typeName, Long refId);
+
     String getFileUrl(FileType.TypeName typeName, Long refId);
 
     List<String> getFileUrls(FileType.TypeName typeName, Long refId);

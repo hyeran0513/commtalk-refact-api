@@ -38,8 +38,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void storeFile(FileType.TypeName typeName, Long refId, MultipartFile multipartFile) {
+        // 이전 파일 삭제
+        deleteFiles(typeName, refId);
+
         // 파일 유형 조회
-        FileType fileType = fileTypeRepo.findByTypeName(typeName)
+        FileType fileType = fileTypeRepo.findByName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
 
         // 파일 저장
@@ -51,8 +54,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void storeFiles(FileType.TypeName typeName, Long refId, List<MultipartFile> multipartFiles) {
+        // 이전 파일(리스트) 삭제
+        deleteFiles(typeName, refId);
+
         // 파일 유형 조회
-        FileType fileType = fileTypeRepo.findByTypeName(typeName)
+        FileType fileType = fileTypeRepo.findByName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
 
         // 파일 저장
@@ -65,26 +71,24 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String getFileUrl(FileType.TypeName typeName, Long refId) {
-        // 파일 유형 조회
-        FileType fileType = fileTypeRepo.findByTypeName(typeName)
-                .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
+    public void deleteFiles(FileType.TypeName name, Long refId) {
+         // 파일(리스트) 삭제
+        fileRepo.deleteAllByRefIdAndTypeName(refId, name);
+    }
 
+    @Override
+    public String getFileUrl(FileType.TypeName name, Long refId) {
         // 파일 조회
-        File file = fileRepo.findByTypeAndRefId(fileType, refId)
+        File file = fileRepo.findByRefIdAndTypeName(refId, name)
                 .orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다."));
 
         return baseUrl + "/files/" + file.getId();
     }
 
     @Override
-    public List<String> getFileUrls(FileType.TypeName typeName, Long refId) {
-        // 파일 유형 조회
-        FileType fileType = fileTypeRepo.findByTypeName(typeName)
-                .orElseThrow(() -> new EntityNotFoundException("파일 유형을 찾을 수 없습니다."));
-
+    public List<String> getFileUrls(FileType.TypeName name, Long refId) {
         // 파일 리스트 조회
-        List<File> files = fileRepo.findAllByTypeAndRefId(fileType, refId);
+        List<File> files = fileRepo.findAllByRefIdAndTypeName(refId, name);
 
         List<String> fileUrls = new ArrayList<>();
         for (File file : files) {

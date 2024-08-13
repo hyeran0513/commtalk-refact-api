@@ -29,7 +29,7 @@ public interface PostService {
 
     List<PostPreviewDTO> getPostPreviewsByViews();
 
-    void createPost(Long memberId, Long boardId, PostCreateRequest createReq);
+    Long createPost(Long memberId, Long boardId, PostCreateRequest createReq);
 
     boolean isLikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
 

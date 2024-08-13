@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface FileTypeRepository extends JpaRepository<FileType, Long> {
 
-    Optional<FileType> findByTypeName(FileType.TypeName typeName);
+    Optional<FileType> findByName(FileType.TypeName name);
 
 }

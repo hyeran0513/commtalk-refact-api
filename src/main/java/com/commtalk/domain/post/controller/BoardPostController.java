@@ -68,8 +68,8 @@ public class BoardPostController {
                                                   HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
-        postSvc.createPost(memberId, boardId, createReq); // 게시글 생성
-        return ResponseDTO.of(HttpStatus.OK, "게시글을 생성했습니다.");
+        Long postId = postSvc.createPost(memberId, boardId, createReq); // 게시글 생성
+        return ResponseDTO.of(HttpStatus.OK, String.valueOf(postId));
     }
 
     @Operation(summary = "게시글 좋아요 및 취소")
