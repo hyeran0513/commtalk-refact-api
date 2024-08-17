@@ -24,7 +24,7 @@ public class BoardWithPinDTO {
     public static BoardWithPinDTO from(Board board) {
         return BoardWithPinDTO.builder()
                 .boardId(board.getId())
-                .boardName(board.getName())
+                .boardName(board.getBoardName())
                 .build();
     }
 

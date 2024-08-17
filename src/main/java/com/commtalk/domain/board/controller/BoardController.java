@@ -1,13 +1,17 @@
 package com.commtalk.domain.board.controller;
 
+import com.commtalk.common.dto.ResponseDTO;
 import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.board.dto.BoardWithPinDTO;
+import com.commtalk.domain.board.dto.request.BoardCreateRequest;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +47,15 @@ public class BoardController {
     public ResponseEntity<BoardDTO> getBoard(@PathVariable Long boardId) {
         BoardDTO boardDto = boardSvc.getBoard(boardId);
         return ResponseEntity.ok(boardDto);
+    }
+
+    @Operation(summary = "게시판 생성")
+    @PostMapping(path = "")
+    public ResponseEntity<ResponseDTO<String>> createBoard(@RequestBody @Valid BoardCreateRequest createReq,
+                                                           HttpServletRequest request) {
+        Long adminId = jwtAuthenticationProvider.getMemberId(request);
+        boardSvc.createBoard(createReq, adminId);
+        return ResponseDTO.of(HttpStatus.OK, "게시판을 생성했습니다.");
     }
 
 }

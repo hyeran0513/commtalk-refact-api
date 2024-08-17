@@ -21,7 +21,9 @@ public enum ErrorCode {
     INVALID_MEMBER(500, "유효하지 않은 회원 식별자입니다."),
 
     // 게시판 에러
+    DUPLICATE_BOARDNAME(409, "게시판 이름이 중복됩니다."),
     EXCEEDED_PIN_LIMIT(400, "핀 고정 게시판은 6개를 넘을 수 없습니다."),
+    BOARD_CREATE_FAILED(500, "게시판 생성에 실패했습니다."),
 
     // 파일 에러
     FILE_NOT_FOUND(500, "파일을 읽을 수 없거나 존재하지 않습니다"),

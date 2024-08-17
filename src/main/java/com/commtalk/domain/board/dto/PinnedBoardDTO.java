@@ -37,7 +37,7 @@ public class PinnedBoardDTO {
         return PinnedBoardDTO.builder()
                 .pinnedBoardId(pinnedBoard.getId())
                 .boardId(board.getId())
-                .boardName(board.getName())
+                .boardName(board.getBoardName())
                 .desc(board.getDescription())
                 .build();
     }

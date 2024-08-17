@@ -46,7 +46,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority(MemberRole.RoleName.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.POST,"/api/v1/boards").hasAnyAuthority(MemberRole.RoleName.ROLE_ADMIN.name())
                         .requestMatchers(permitList).permitAll()
                         .requestMatchers("/api/v1/boards/pinned/**").authenticated()
                         .requestMatchers("/api/v1/files/profile/**").authenticated()

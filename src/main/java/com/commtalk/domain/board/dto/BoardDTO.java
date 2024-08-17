@@ -23,7 +23,7 @@ public class BoardDTO {
     public static BoardDTO from(Board board) {
         return BoardDTO.builder()
                 .boardId(board.getId())
-                .boardName(board.getName())
+                .boardName(board.getBoardName())
                 .desc(board.getDescription())
                 .build();
     }

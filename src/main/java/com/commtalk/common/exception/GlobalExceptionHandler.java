@@ -6,7 +6,9 @@ import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -97,6 +99,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleBadCredentialsException() {
         return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "회원을 찾을 수 없거나 비밀번호가 틀렸습니다.");
+    }
+    
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ResponseDTO<String>> handleInsufficientAuthenticationException() {
+        return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "관리자 계정만 접근 가능합니다.");
+    }
+
+    @ExceptionHandler(AuthenticationServiceException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    ResponseEntity<ResponseDTO<String>> handleAuthenticationServiceException(AuthenticationServiceException e) {
+        return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
 }

@@ -1,9 +1,12 @@
 package com.commtalk.domain.board.service.impl;
 
+import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.EntityNotFoundException;
+import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.board.dto.BoardWithPinDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
+import com.commtalk.domain.board.dto.request.BoardCreateRequest;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.entity.PinnedBoard;
 import com.commtalk.domain.board.repository.BoardRepository;
@@ -82,6 +85,21 @@ public class BoardServiceImpl implements BoardService {
         return pinnedBoardList.stream()
                 .map(PinnedBoardDTO::from)
                 .toList();
+    }
+
+    @Override
+    public void createBoard(BoardCreateRequest createReq, Long adminId) {
+        // 게시판 중복 여부 확인
+        if (boardRepo.existsByBoardName(createReq.getBoardName())) {
+            throw new CustomException(ErrorCode.DUPLICATE_BOARDNAME);
+        }
+
+        // 게시판 생성
+        Board board = Board.create(createReq, adminId);
+        Board newBoard = boardRepo.save(board);
+        if (newBoard.getId() == null) {
+            throw new CustomException(ErrorCode.BOARD_CREATE_FAILED);
+        }
     }
 
     @Override
