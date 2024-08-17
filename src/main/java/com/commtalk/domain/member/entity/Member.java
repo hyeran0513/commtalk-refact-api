@@ -21,7 +21,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickname;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
@@ -32,11 +32,15 @@ public class Member extends BaseEntity {
     private String memberName;
 
     @Setter
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Setter
     private String phone;
+
+    @Setter
+    @Column(name = "deleted_yn")
+    private boolean deletedYN;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "member_role_id", nullable = false)

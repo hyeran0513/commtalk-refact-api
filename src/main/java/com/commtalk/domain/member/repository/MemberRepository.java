@@ -8,8 +8,10 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    boolean existsByNickname(String nickname);
+    boolean existsByNicknameAndDeletedYN(String nickname, Boolean deletedYN);
 
-    @Query("SELECT m FROM Member m JOIN FETCH m.password mp WHERE m.nickname = :nickname")
-    Optional<Member> findByNickName(String nickname);
+    @Query("SELECT m FROM Member m JOIN FETCH m.password mp " +
+            "WHERE m.nickname = :nickname AND m.deletedYN = :deletedYN")
+    Optional<Member> findByNickName(String nickname, boolean deletedYN);
+
 }

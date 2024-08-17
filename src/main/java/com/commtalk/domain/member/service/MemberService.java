@@ -9,6 +9,8 @@ public interface MemberService {
 
     Long join(MemberJoinRequest joinReq);
 
+    void withdraw(Long memberId);
+
     MemberDTO getInfoById(Long memberId);
 
     void updateInfo(Long memberId, MemberUpdateRequest updateReq);

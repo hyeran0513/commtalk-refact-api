@@ -16,7 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public PrincipalDetails loadUserByUsername(String nickname) {
-        Member member = memberRepo.findByNickName(nickname)
+        Member member = memberRepo.findByNickName(nickname, false)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         return new PrincipalDetails(member);
     }

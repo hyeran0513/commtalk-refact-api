@@ -43,7 +43,7 @@ public class MemberController {
         return ResponseDTO.of(HttpStatus.CREATED, "회원가입에 성공했습니다.");
     }
 
-    @Operation(summary = "내 정보 조회")
+    @Operation(summary = "회원 조회")
     @GetMapping(path = "/me")
     public ResponseEntity<MemberDTO> getMyInfo(HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
@@ -51,7 +51,7 @@ public class MemberController {
         return ResponseEntity.ok(memberDto);
     }
 
-    @Operation(summary = "내 정보 수정")
+    @Operation(summary = "회원 수정")
     @PatchMapping(path = "/me")
     public ResponseEntity<MemberDTO> updateMyInfo(@RequestBody @Valid MemberUpdateRequest updateReq,
                                                   HttpServletRequest request) {
@@ -60,6 +60,15 @@ public class MemberController {
 
         MemberDTO updateMemberDto = memberSvc.getInfoById(memberId); // 수정된 회원 조회
         return ResponseEntity.ok(updateMemberDto);
+    }
+
+    @Operation(summary = "회원 삭제")
+    @DeleteMapping(path = "/me")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseDTO<String>> deleteMember(HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        memberSvc.withdraw(memberId); // 회원탈퇴
+        return ResponseDTO.of(HttpStatus.CREATED, "회원탈퇴에 성공했습니다.");
     }
 
     @Operation(summary = "비밀번호 변경")

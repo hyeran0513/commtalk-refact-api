@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public Long join(MemberJoinRequest joinReq) {
         // 계정 중복 여부 확인
-        if (memberRepo.existsByNickname(joinReq.getNickname())) {
+        if (memberRepo.existsByNicknameAndDeletedYN(joinReq.getNickname(), false)) {
             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
@@ -70,6 +70,19 @@ public class MemberServiceImpl implements MemberService {
         passwordRepo.save(password);
 
         return newMember.getId();
+    }
+
+    @Override
+    public void withdraw(Long memberId) {
+        // 회원 조회
+        Member member = memberRepo.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 회원의 deletedYN 컬럼 값을 true로 변경
+        member.setDeletedYN(true);
+
+        // 수정된 회원 저장
+        memberRepo.save(member);
     }
 
     @Override
