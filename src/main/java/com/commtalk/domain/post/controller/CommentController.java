@@ -73,7 +73,7 @@ public class CommentController {
                                                              HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
-        commentSvc.deleteComment(memberId, commentId); // 댓글 수정
+        commentSvc.deleteComment(memberId, commentId); // 댓글 삭제
         return ResponseDTO.of(HttpStatus.OK, "댓글을 삭제했습니다.");
     }
 

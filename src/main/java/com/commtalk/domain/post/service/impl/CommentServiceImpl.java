@@ -108,8 +108,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void updateComment(Long memberId, Long commentId, CommentUpdateRequest updateReq) {
         // 댓글 조회
-        Comment comment = commentRepo.findByIdWithWriter(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("상위 댓글을 찾을 수 없습니다."));
+        Comment comment = commentRepo.findByIdWithWriter(commentId, false)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         if (!memberId.equals(comment.getWriter().getId())) {
             throw new PermissionException("작성자만 댓글 수정이 가능합니다.");
         }
@@ -127,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long memberId, Long commentId) {
         // 댓글 조회
         Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("상위 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         if (!memberId.equals(comment.getWriter().getId())) {
             throw new PermissionException("작성자만 댓글 삭제가 가능합니다.");
         }
@@ -137,9 +137,6 @@ public class CommentServiceImpl implements CommentService {
 
         // 수정된 댓글 저장
         commentRepo.save(comment);
-
-        // 댓글 Id를 참조하는 좋아요 전체 삭제
-//        activityRepo.deleteAllByRefIdAndTypeName(commentId, ActivityType.TypeName.COMMENT_LIKE);
     }
 
     @Override

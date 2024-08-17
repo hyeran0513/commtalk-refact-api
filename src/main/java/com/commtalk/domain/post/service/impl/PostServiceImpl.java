@@ -1,11 +1,13 @@
 package com.commtalk.domain.post.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
+import com.commtalk.common.exception.PermissionException;
 import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.dto.PostPreviewDTO;
 import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.dto.PostPageDTO;
 import com.commtalk.domain.board.entity.Board;
+import com.commtalk.domain.post.dto.request.PostUpdateRequest;
 import com.commtalk.domain.post.entity.*;
 import com.commtalk.domain.post.exception.PostIdNullException;
 import com.commtalk.domain.post.repository.ActivityTypeRepository;
@@ -31,32 +33,33 @@ public class PostServiceImpl implements PostService {
     private final PostHashtagRepository hashtagRepo;
     private final ActivityTypeRepository activityTypeRepo;
     private final MemberActivityRepository activityRepo;
+    private final PostHashtagRepository postHashtagRepo;
 
     @Override
     public PostPageDTO getPosts(Pageable pageable) {
         // 페이지에 해당하는 게시글 목록 조회
-        Page<Post> postPage = postRepo.findAllOrderByUpdatedAt(pageable);
+        Page<Post> postPage = postRepo.findAllOrderByUpdatedAt(pageable, false);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByBoard(Long boardId, Pageable pageable) {
         // 페이지에 해당하는 게시판 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByBoardIdOrderByUpdatedAt(boardId, pageable);
+        Page<Post> postPage = postRepo.findByBoardIdOrderByUpdatedAt(boardId, pageable, false);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByKeyword(String keyword, Pageable pageable) {
         // 제목 또는 내용에 키워드가 포함되는 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByKeywordOrderByUpdateAt(keyword, pageable);
+        Page<Post> postPage = postRepo.findByKeywordOrderByUpdateAt(keyword, pageable, false);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable) {
         // 제목 또는 내용에 키워드가 포함되는 게시판 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByBoardAndKeywordOrderByUpdateAt(boardId, keyword, pageable);
+        Page<Post> postPage = postRepo.findByBoardAndKeywordOrderByUpdateAt(boardId, keyword, pageable, false);
         return PostPageDTO.of(postPage);
     }
 
@@ -78,7 +81,8 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostDTO getPost(Long postId, Long memberId) {
         // 게시글 조회
-        Object[] postObj = postRepo.findById(postId, memberId, ActivityType.TypeName.POST_LIKE, ActivityType.TypeName.POST_SCRAP)
+        Object[] postObj = postRepo.findById(postId, memberId, ActivityType.TypeName.POST_LIKE,
+                        ActivityType.TypeName.POST_SCRAP, false)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
         postObj = (Object[]) postObj[0];
 
@@ -104,7 +108,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size) {
         // size 만큼 게시글 미리보기 목록 조회
-        Page<Post> postPage = postRepo.findByBoardIdOrderByViewCount(boardId, PageRequest.of(0, size));
+        Page<Post> postPage = postRepo.findByBoardIdOrderByViewCount(boardId, PageRequest.of(0, size), false);
         List<Post> postList = postPage.getContent();
 
         return postList.stream()
@@ -114,7 +118,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostPreviewDTO> getPostPreviewsByViews() {
-        Page<Post> postPage = postRepo.findAllByOrderByViewCountDesc(PageRequest.of(0, 3));
+        Page<Post> postPage = postRepo.findAllByDeletedYNOrderByViewCountDesc(PageRequest.of(0, 3), false);
         List<Post> postList = postPage.getContent();
 
         return postList.stream()
@@ -143,6 +147,52 @@ public class PostServiceImpl implements PostService {
         }
 
         return newPost.getId();
+    }
+
+    @Override
+    @Transactional
+    public void updatePost(Long memberId, Long postId, PostUpdateRequest updateReq) {
+        // 게시글 조회
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (!memberId.equals(post.getAuthor().getId())) {
+            throw new PermissionException("작성자만 게시글 수정이 가능합니다.");
+        }
+
+        // 게시글 수정
+        post.setTitle(updateReq.getTitle());
+        post.setContent(updateReq.getContent());
+        post.setAnonymousYN(updateReq.isAnonymousYN());
+        post.setCommentableYN(updateReq.isCommentableYN());
+
+        // 수정된 게시글 저장
+        postRepo.save(post);
+
+        // 이전 게시글 해시태그 삭제
+        postHashtagRepo.deleteAllByPostId(postId);
+
+        // 게시글 해시태그 생성
+        PostHashtag postHashtag;
+        for (String hashtag : updateReq.getHashtags()) {
+            postHashtag = PostHashtag.create(post, hashtag);
+            hashtagRepo.save(postHashtag);
+        }
+    }
+
+    @Override
+    public void deletePost(Long memberId, Long postId) {
+        // 게시글 조회
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        if (!memberId.equals(post.getAuthor().getId())) {
+            throw new PermissionException("작성자만 게시글 삭제가 가능합니다.");
+        }
+
+        // 게시글의 deletedYN 컬럼 값을 true로 변경
+        post.setDeletedYN(true);
+
+        // 수정된 게시글 저장
+        postRepo.save(post);
     }
 
     @Override

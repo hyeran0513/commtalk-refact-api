@@ -12,8 +12,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "SELECT DISTINCT c FROM Comment c " +
             "JOIN FETCH c.writer w " +
-            "WHERE c.id = :commentId")
-    Optional<Comment> findByIdWithWriter(Long commentId);
+            "WHERE c.id = :commentId AND c.deletedYN = :deletedYN")
+    Optional<Comment> findByIdWithWriter(Long commentId, boolean deletedYN);
 
     List<Comment> findByPostIdAndDeletedYN(Long postId, boolean deletedYN);
 

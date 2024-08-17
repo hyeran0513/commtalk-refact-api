@@ -5,6 +5,7 @@ import com.commtalk.domain.board.dto.BoardDTO;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.post.dto.*;
 import com.commtalk.domain.post.dto.request.PostCreateRequest;
+import com.commtalk.domain.post.dto.request.PostUpdateRequest;
 import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.service.CommentService;
 import com.commtalk.domain.post.service.PostService;
@@ -70,6 +71,28 @@ public class BoardPostController {
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
         Long postId = postSvc.createPost(memberId, boardId, createReq); // 게시글 생성
         return ResponseDTO.of(HttpStatus.OK, String.valueOf(postId));
+    }
+
+    @Operation(summary = "게시글 수정")
+    @PostMapping(path = "/{postId}")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseDTO<String>> updatePost(@PathVariable Long boardId, @PathVariable Long postId,
+                                                          @RequestBody @Valid PostUpdateRequest updateReq, HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
+        postSvc.updatePost(memberId, boardId, updateReq); // 게시글 수정
+        return ResponseDTO.of(HttpStatus.OK, String.valueOf(postId));
+    }
+
+    @Operation(summary = "게시글 삭제")
+    @DeleteMapping(path = "/{postId}")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseDTO<String>> deletePost(@PathVariable Long boardId, @PathVariable Long postId,
+                                                          HttpServletRequest request) {
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
+        postSvc.deletePost(memberId, postId); // 게시글 삭제
+        return ResponseDTO.of(HttpStatus.OK, "게시글을 삭제했습니다.");
     }
 
     @Operation(summary = "게시글 좋아요 및 취소")

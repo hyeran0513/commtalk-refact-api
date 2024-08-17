@@ -30,18 +30,23 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "author_id")
     private Member author;
 
+    @Setter
     @Column(name = "post_title", nullable = false)
     private String title;
 
+    @Setter
     @Column(name = "post_content", nullable = false)
     private String content;
 
+    @Setter
     @Column(name = "anonymous_yn")
     private boolean anonymousYN;
 
+    @Setter
     @Column(name = "commentable_yn")
     private boolean commentableYN;
 
+    @Setter
     @Column(name = "deleted_yn")
     private boolean deletedYN;
 
