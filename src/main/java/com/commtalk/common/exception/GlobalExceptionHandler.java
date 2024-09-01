@@ -12,7 +12,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -66,7 +65,6 @@ public class GlobalExceptionHandler {
      * @return  ResponseEntity 객체
      */
     @ExceptionHandler(MemberActivitySetException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ResponseDTO<String>> handleMemberActivitySetException(MemberActivitySetException e) {
         return ResponseDTO.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
@@ -77,38 +75,31 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity 객체
      */
     @ExceptionHandler(PermissionException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ResponseDTO<String>> handlePermissionException(PermissionException e) {
         return ResponseDTO.of(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
-
     @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ResponseDTO<String>> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(JwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleJwtException(JwtException e) {
         return ResponseDTO.of(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleBadCredentialsException() {
-        return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "회원을 찾을 수 없거나 비밀번호가 틀렸습니다.");
+        return ResponseDTO.of(HttpStatus.BAD_REQUEST, "회원을 찾을 수 없거나 비밀번호가 틀렸습니다.");
     }
     
     @ExceptionHandler(InsufficientAuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ResponseDTO<String>> handleInsufficientAuthenticationException() {
         return ResponseDTO.of(HttpStatus.UNAUTHORIZED, "관리자 계정만 접근 가능합니다.");
     }
 
     @ExceptionHandler(AuthenticationServiceException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     ResponseEntity<ResponseDTO<String>> handleAuthenticationServiceException(AuthenticationServiceException e) {
         return ResponseDTO.of(HttpStatus.NOT_FOUND, e.getMessage());
     }

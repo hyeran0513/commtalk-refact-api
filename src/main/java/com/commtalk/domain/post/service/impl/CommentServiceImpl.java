@@ -146,7 +146,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void likeComment(Long memberId, Long commentId) {
+    public ParentCommentDTO likeComment(Long memberId, Long commentId) {
         // 회원 활동 유형 조회
         ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.COMMENT_LIKE)
                 .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
@@ -160,12 +160,12 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         comment.setLikeCount(comment.getLikeCount() + 1);
-        commentRepo.save(comment);
+        return ParentCommentDTO.from(commentRepo.save(comment), true);
     }
 
     @Override
     @Transactional
-    public void unlikeComment(Long memberId, Long commentId) {
+    public ParentCommentDTO unlikeComment(Long memberId, Long commentId) {
         // 회원 활동 삭제
         activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
 
@@ -173,7 +173,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         comment.setLikeCount(comment.getLikeCount() - 1);
-        commentRepo.save(comment);
+        return ParentCommentDTO.from(commentRepo.save(comment), false);
     }
 
 }

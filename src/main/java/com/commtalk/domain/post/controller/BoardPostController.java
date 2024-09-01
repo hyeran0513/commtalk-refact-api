@@ -97,36 +97,34 @@ public class BoardPostController {
 
     @Operation(summary = "게시글 좋아요 및 취소")
     @PostMapping(path = "/{postId}/like")
-    public ResponseEntity<ResponseDTO<String>> likePost(@PathVariable Long boardId, @PathVariable Long postId,
+    public ResponseEntity<PostDTO> likePost(@PathVariable Long boardId, @PathVariable Long postId,
                                                         HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
-        String message;
+
+        PostDTO postDto;
         if (!postSvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE)) {
-            postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요
-            message = "게시글에 좋아요를 눌렀습니다.";
+            postDto = postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요
         } else {
-            postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요 취소
-            message = "게시글 좋아요를 취소했습니다.";
+            postDto = postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요 취소
         }
-        return ResponseDTO.of(HttpStatus.OK, message);
+        return ResponseEntity.ok(postDto);
     }
 
     @Operation(summary = "게시글 스크랩 및 취소")
     @PostMapping(path = "/{postId}/scrap")
-    public ResponseEntity<ResponseDTO<String>> scrapPost(@PathVariable Long boardId, @PathVariable Long postId,
+    public ResponseEntity<PostDTO> scrapPost(@PathVariable Long boardId, @PathVariable Long postId,
                                                         HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
-        String message;
+
+        PostDTO postDto;
         if (!postSvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP)) {
-            postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 좋아요
-            message = "게시글에 좋아요를 눌렀습니다.";
+            postDto = postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩
         } else {
-            postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 좋아요 취소
-            message = "게시글 좋아요를 취소했습니다.";
+            postDto = postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩 취소
         }
-        return ResponseDTO.of(HttpStatus.OK, message);
+        return ResponseEntity.ok(postDto);
     }
 
 }

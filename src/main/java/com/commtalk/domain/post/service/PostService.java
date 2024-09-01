@@ -38,8 +38,8 @@ public interface PostService {
 
     boolean isLikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
 
-    void likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
+    PostDTO likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
 
-    void unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
+    PostDTO unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
 
 }

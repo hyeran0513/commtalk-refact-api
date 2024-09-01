@@ -1,6 +1,7 @@
 package com.commtalk.domain.file.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
+import com.commtalk.domain.file.dto.FileUrlDTO;
 import com.commtalk.domain.file.entity.FileType;
 import com.commtalk.domain.file.service.FileService;
 import com.commtalk.domain.post.service.PostService;
@@ -37,17 +38,17 @@ public class FileController {
 
     @Operation(summary = "회원 프로필 URL 조회")
     @GetMapping(path = "/profile")
-    public ResponseEntity<ResponseDTO<String>> getProfileUrl(HttpServletRequest request) {
+    public ResponseEntity<FileUrlDTO> getProfileUrl(HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        String fileUrl = fileSvc.getFileUrl(FileType.TypeName.PROFILE, memberId);
-        return ResponseDTO.of(HttpStatus.OK, fileUrl);
+        FileUrlDTO fileUrlDto = fileSvc.getFileUrl(FileType.TypeName.PROFILE, memberId);
+        return ResponseEntity.ok(fileUrlDto);
     }
 
     @Operation(summary = "게시글 파일 URL 리스트 조회")
     @GetMapping(path = "/post/{postId}")
-    public ResponseEntity<ResponseDTO<List<String>>> getPostFileUrls(@PathVariable Long postId) {
-        List<String> fileUrls = fileSvc.getFileUrls(FileType.TypeName.POST, postId);
-        return ResponseDTO.of(HttpStatus.OK, fileUrls);
+    public ResponseEntity<List<FileUrlDTO>> getPostFileUrls(@PathVariable Long postId) {
+        List<FileUrlDTO> fileUrlDtoList = fileSvc.getFileUrls(FileType.TypeName.POST, postId);
+        return ResponseEntity.ok(fileUrlDtoList);
     }
 
     @Operation(summary = "회원 프로필 사진 업로드")

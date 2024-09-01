@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -180,6 +181,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deletePost(Long memberId, Long postId) {
         // 게시글 조회
         Post post = postRepo.findById(postId)
@@ -201,7 +203,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
+    @Transactional
+    public PostDTO likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
         // 회원 활동 유형 조회
         ActivityType activityType = activityTypeRepo.findByName(typeName)
                 .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
@@ -219,11 +222,13 @@ public class PostServiceImpl implements PostService {
         } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
             post.setScrapCount(post.getScrapCount() + 1);
         }
-        postRepo.save(post);
+
+        return PostDTO.from(postRepo.save(post), new ArrayList<>(), true, true);
     }
 
     @Override
-    public void unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
+    @Transactional
+    public PostDTO unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
         // 회원 활동 삭제
         activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
 
@@ -235,7 +240,8 @@ public class PostServiceImpl implements PostService {
         } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
             post.setScrapCount(post.getScrapCount() - 1);
         }
-        postRepo.save(post);
+
+        return PostDTO.from(postRepo.save(post), new ArrayList<>(), false, false);
     }
 
 }

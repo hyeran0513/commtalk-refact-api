@@ -4,6 +4,7 @@ import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.common.exception.ErrorCode;
 import com.commtalk.common.util.CommonFileUtils;
+import com.commtalk.domain.file.dto.FileUrlDTO;
 import com.commtalk.domain.file.dto.request.FileCreateRequest;
 import com.commtalk.domain.file.entity.File;
 import com.commtalk.domain.file.entity.FileType;
@@ -80,24 +81,22 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String getFileUrl(FileType.TypeName typeName, Long refId) {
+    public FileUrlDTO getFileUrl(FileType.TypeName typeName, Long refId) {
         // 파일 조회
         File file = fileRepo.findByRefIdAndTypeName(refId, typeName)
                 .orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다."));
 
-        return baseUrl + "/files/" + file.getId();
+        return FileUrlDTO.of(baseUrl + "/files/" + file.getId());
     }
 
     @Override
-    public List<String> getFileUrls(FileType.TypeName typeName, Long refId) {
+    public List<FileUrlDTO> getFileUrls(FileType.TypeName typeName, Long refId) {
         // 파일 리스트 조회
         List<File> files = fileRepo.findAllByRefIdAndTypeName(refId, typeName);
 
-        List<String> fileUrls = new ArrayList<>();
-        for (File file : files) {
-            fileUrls.add(baseUrl + "/files/" + file.getId());
-        }
-        return fileUrls;
+        return files.stream()
+                .map(file -> FileUrlDTO.of(baseUrl + "/files/" + file.getId()))
+                .toList();
     }
 
     @Override
