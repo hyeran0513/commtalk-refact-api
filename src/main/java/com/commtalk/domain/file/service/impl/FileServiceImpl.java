@@ -76,7 +76,11 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteFiles(FileType.TypeName typeName, Long refId) {
-         // 파일(리스트) 삭제
+        // 파일 삭제
+        List<String> fileNames = fileRepo.findSaveFileNameByRefIdAndTypeName(refId, typeName);
+        for (String fileName : fileNames) {
+            CommonFileUtils.deleteFile(baseDirPath + fileName);
+        }
         fileRepo.deleteAllByRefIdAndTypeName(refId, typeName);
     }
 
