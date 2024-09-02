@@ -4,6 +4,7 @@
 
 ## ✔ 프로젝트 소개
 commTalk 프로젝트의 구조적인 개선 및 코드 품질 개선, 프론트와 백엔드 분리를 위해 리팩토링을 진행하고 있습니다.
+[커톡커톡 API](https://documenter.getpostman.com/view/36666985/2sAXjM4rwY)
 
 ### 개발 기간
 - 2024.06 - 진행
