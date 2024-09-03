@@ -15,16 +15,12 @@ public interface CommentService {
 
     long getCommentCountByPost(Long postId);
 
+    List<Long> getPostIdsByCommenter(Long memberId);
+
     void createComment(Long memberId, Long postId, CommentCreateRequest createReq);
 
     void updateComment(Long memberId, Long commentId, CommentUpdateRequest updateReq);
 
     void deleteComment(Long memberId, Long commentId);
-
-    boolean isLikeComment(Long memberId, Long commentId);
-
-    ParentCommentDTO likeComment(Long memberId, Long commentId);
-
-    ParentCommentDTO unlikeComment(Long memberId, Long commentId);
 
 }

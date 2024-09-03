@@ -8,6 +8,7 @@ import com.commtalk.domain.post.dto.request.PostCreateRequest;
 import com.commtalk.domain.post.dto.request.PostUpdateRequest;
 import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.service.CommentService;
+import com.commtalk.domain.post.service.MemberActivityService;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,7 @@ public class BoardPostController {
     private final BoardService boardSvc;
     private final PostService postSvc;
     private final CommentService commentSvc;
+    private final MemberActivityService memberActivitySvc;
 
     @Operation(summary = "게시판 게시글 목록 조회")
     @GetMapping(path = "")
@@ -103,10 +105,10 @@ public class BoardPostController {
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
 
         PostDTO postDto;
-        if (!postSvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE)) {
-            postDto = postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요
+        if (!memberActivitySvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE)) {
+            postDto = memberActivitySvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요
         } else {
-            postDto = postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요 취소
+            postDto = memberActivitySvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요 취소
         }
         return ResponseEntity.ok(postDto);
     }
@@ -119,10 +121,10 @@ public class BoardPostController {
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
 
         PostDTO postDto;
-        if (!postSvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP)) {
-            postDto = postSvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩
+        if (!memberActivitySvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP)) {
+            postDto = memberActivitySvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩
         } else {
-            postDto = postSvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩 취소
+            postDto = memberActivitySvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩 취소
         }
         return ResponseEntity.ok(postDto);
     }

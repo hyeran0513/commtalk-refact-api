@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -52,6 +53,24 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                     "JOIN p.board b " +
                     "WHERE b.id = :boardId AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND p.deletedYN = :deletedYN")
     Page<Post> findByBoardAndKeywordOrderByUpdateAt(Long boardId, String keyword, Pageable pageable, boolean deletedYN);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.author a " +
+            "WHERE a.id = :authorId AND p.deletedYN = :deletedYN " +
+            "ORDER BY p.updatedAt DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p " +
+                    "JOIN p.author a " +
+                    "WHERE a.id = :authorId AND p.deletedYN = :deletedYN")
+    Page<Post> findByAuthorOrderByUpdateAt(Long authorId, Pageable pageable, boolean deletedYN);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN FETCH p.author a " +
+            "WHERE p.id IN :postIds AND p.deletedYN = :deletedYN " +
+            "ORDER BY p.updatedAt DESC",
+            countQuery = "SELECT COUNT(p) FROM Post p " +
+                    "JOIN p.author a " +
+                    "WHERE p.id IN :postIds AND p.deletedYN = :deletedYN")
+    Page<Post> findByIdsOrderByUpdateAt(List<Long> postIds, Pageable pageable, boolean deletedYN);
 
     @Query(value = "SELECT DISTINCT p FROM Post p " +
             "JOIN FETCH p.board b " +

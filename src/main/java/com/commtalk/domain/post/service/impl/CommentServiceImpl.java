@@ -8,15 +8,11 @@ import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
 import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.entity.Comment;
-import com.commtalk.domain.post.entity.MemberActivity;
 import com.commtalk.domain.post.entity.Post;
 import com.commtalk.domain.post.exception.CommentIdNullException;
 import com.commtalk.common.exception.PermissionException;
-import com.commtalk.domain.post.repository.ActivityTypeRepository;
 import com.commtalk.domain.post.repository.CommentRepository;
-import com.commtalk.domain.post.repository.MemberActivityRepository;
 import com.commtalk.domain.post.service.CommentService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +26,6 @@ import java.util.Map;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepo;
-    private final ActivityTypeRepository activityTypeRepo;
-    private final MemberActivityRepository activityRepo;
 
     @Override
     public List<ParentCommentDTO> getCommentsByPost(Long postId) {
@@ -86,6 +80,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Long> getPostIdsByCommenter(Long memberId) {
+        return commentRepo.findPostIdsByWriterId(memberId, false);
+    }
+
+    @Override
     public void createComment(Long memberId, Long postId, CommentCreateRequest createReq) {
         // 댓글 생성
         Member member = Member.builder().id(memberId).build();
@@ -137,43 +136,6 @@ public class CommentServiceImpl implements CommentService {
 
         // 수정된 댓글 저장
         commentRepo.save(comment);
-    }
-
-    @Override
-    public boolean isLikeComment(Long memberId, Long commentId) {
-        return activityRepo.existsByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
-    }
-
-    @Override
-    @Transactional
-    public ParentCommentDTO likeComment(Long memberId, Long commentId) {
-        // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.COMMENT_LIKE)
-                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
-
-        // 회원 활동 저장
-        Member member = Member.builder().id(memberId).build();
-        MemberActivity activity = MemberActivity.create(activityType, member, commentId);
-        activityRepo.save(activity);
-
-        // 댓글 좋아요 수 업데이트
-        Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
-        comment.setLikeCount(comment.getLikeCount() + 1);
-        return ParentCommentDTO.from(commentRepo.save(comment), true);
-    }
-
-    @Override
-    @Transactional
-    public ParentCommentDTO unlikeComment(Long memberId, Long commentId) {
-        // 회원 활동 삭제
-        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
-
-        // 댓글 좋아요 수 업데이트
-        Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
-        comment.setLikeCount(comment.getLikeCount() - 1);
-        return ParentCommentDTO.from(commentRepo.save(comment), false);
     }
 
 }

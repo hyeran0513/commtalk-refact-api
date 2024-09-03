@@ -20,6 +20,10 @@ public interface PostService {
 
     PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable);
 
+    PostPageDTO getPostsByAuthor(Long memberId, Pageable pageable);
+
+    PostPageDTO getPostsByIds(List<Long> postIds, Pageable pageable);
+
     PostDTO getPost(Long postId);
 
     PostDTO getPost(Long postId, Long memberId);
@@ -28,18 +32,12 @@ public interface PostService {
 
     List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size);
 
-    List<PostPreviewDTO> getPostPreviewsByViews();
+    List<PostPreviewDTO> getPostPreviewsTop3ByViews();
 
     Long createPost(Long memberId, Long boardId, PostCreateRequest createReq);
 
     void updatePost(Long memberId, Long postId, PostUpdateRequest updateReq);
 
     void deletePost(Long memberId, Long postId);
-
-    boolean isLikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
-
-    PostDTO likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
-
-    PostDTO unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName);
 
 }

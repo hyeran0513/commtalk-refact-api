@@ -24,4 +24,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Long countByPostIdAndDeletedYN(Long postId, boolean deletedYN);
 
+    @Query(value = "SELECT DISTINCT c.post.id FROM Comment c " +
+            "JOIN c.writer w " +
+            "WHERE w.id = :writerId AND c.deletedYN = :deletedYN")
+    List<Long> findPostIdsByWriterId(Long writerId, boolean deletedYN);
+
 }

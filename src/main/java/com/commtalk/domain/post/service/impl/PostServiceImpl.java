@@ -32,8 +32,6 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepo;
     private final PostHashtagRepository hashtagRepo;
-    private final ActivityTypeRepository activityTypeRepo;
-    private final MemberActivityRepository activityRepo;
     private final PostHashtagRepository postHashtagRepo;
 
     @Override
@@ -61,6 +59,20 @@ public class PostServiceImpl implements PostService {
     public PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable) {
         // 제목 또는 내용에 키워드가 포함되는 게시판 게시글 목록 조회
         Page<Post> postPage = postRepo.findByBoardAndKeywordOrderByUpdateAt(boardId, keyword, pageable, false);
+        return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostPageDTO getPostsByAuthor(Long memberId, Pageable pageable) {
+        // 회원이 작성한 게시글 목록 조회
+        Page<Post> postPage = postRepo.findByAuthorOrderByUpdateAt(memberId, pageable, false);
+        return PostPageDTO.of(postPage);
+    }
+
+    @Override
+    public PostPageDTO getPostsByIds(List<Long> postIds, Pageable pageable) {
+        // 특정 postId에 해당하는 게시글 목록 조회
+        Page<Post> postPage = postRepo.findByIdsOrderByUpdateAt(postIds, pageable, false);
         return PostPageDTO.of(postPage);
     }
 
@@ -118,7 +130,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostPreviewDTO> getPostPreviewsByViews() {
+    public List<PostPreviewDTO> getPostPreviewsTop3ByViews() {
         Page<Post> postPage = postRepo.findAllByDeletedYNOrderByViewCountDesc(PageRequest.of(0, 3), false);
         List<Post> postList = postPage.getContent();
 
@@ -195,53 +207,6 @@ public class PostServiceImpl implements PostService {
 
         // 수정된 게시글 저장
         postRepo.save(post);
-    }
-
-    @Override
-    public boolean isLikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
-        return activityRepo.existsByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
-    }
-
-    @Override
-    @Transactional
-    public PostDTO likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
-        // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByName(typeName)
-                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
-
-        // 회원 활동 저장
-        Member member = Member.builder().id(memberId).build();
-        MemberActivity activity = MemberActivity.create(activityType, member, postId);
-        activityRepo.save(activity);
-
-        // 게시글 좋아요(스크랩) 수 업데이트
-        Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        if (typeName == ActivityType.TypeName.POST_LIKE) {
-            post.setLikeCount(post.getLikeCount() + 1);
-        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
-            post.setScrapCount(post.getScrapCount() + 1);
-        }
-
-        return PostDTO.from(postRepo.save(post), new ArrayList<>(), true, true);
-    }
-
-    @Override
-    @Transactional
-    public PostDTO unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
-        // 회원 활동 삭제
-        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
-
-        // 게시글 좋아요(스크랩) 수 업데이트
-        Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        if (typeName == ActivityType.TypeName.POST_LIKE) {
-            post.setLikeCount(post.getLikeCount() - 1);
-        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
-            post.setScrapCount(post.getScrapCount() - 1);
-        }
-
-        return PostDTO.from(postRepo.save(post), new ArrayList<>(), false, false);
     }
 
 }

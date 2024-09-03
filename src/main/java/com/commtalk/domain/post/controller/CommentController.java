@@ -5,6 +5,7 @@ import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
 import com.commtalk.domain.post.service.CommentService;
+import com.commtalk.domain.post.service.MemberActivityService;
 import com.commtalk.domain.post.service.PostService;
 import com.commtalk.security.JwtAuthenticationProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ public class CommentController {
 
     private final PostService postSvc;
     private final CommentService commentSvc;
+    private final MemberActivityService memberActivitySvc;
 
     @Operation(summary = "게시글 댓글 목록 조회")
     @GetMapping(path = "")
@@ -84,10 +86,10 @@ public class CommentController {
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
 
         ParentCommentDTO commentDto;
-        if (!commentSvc.isLikeComment(memberId, commentId)) {
-            commentDto = commentSvc.likeComment(memberId, commentId); // 좋아요
+        if (!memberActivitySvc.isLikeComment(memberId, commentId)) {
+            commentDto = memberActivitySvc.likeComment(memberId, commentId); // 좋아요
         } else {
-            commentDto = commentSvc.unlikeComment(memberId, commentId); // 좋아요 취소
+            commentDto = memberActivitySvc.unlikeComment(memberId, commentId); // 좋아요 취소
         }
         return ResponseEntity.ok(commentDto);
     }
