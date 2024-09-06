@@ -86,6 +86,7 @@ public class PostServiceImpl implements PostService {
 
         // 조회수 증가
         post.setViewCount(post.getViewCount() + 1);
+        post.setSkipUpdateAt(true);
         postRepo.save(post);
         return PostDTO.from(post, hashtags, false, false);
     }
@@ -106,6 +107,7 @@ public class PostServiceImpl implements PostService {
 
         // 조회수 증가
         post.setViewCount(post.getViewCount() + 1);
+        post.setSkipUpdateAt(true);
         postRepo.save(post);
 
         return PostDTO.from(post, hashtags, likeYN, scrapYN);

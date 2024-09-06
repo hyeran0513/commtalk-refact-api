@@ -9,13 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "post")
-public class Post extends BaseEntity {
+public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,6 +66,29 @@ public class Post extends BaseEntity {
     @Setter
     @Column(name = "scrap_count")
     private long scrapCount;
+
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    @Transient
+    @Setter
+    private boolean skipUpdateAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Timestamp.valueOf(LocalDateTime.now());
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (!this.skipUpdateAt) {
+            this.updatedAt = Timestamp.valueOf(LocalDateTime.now()); // 새로운 날짜로 업데이트
+        }
+    }
 
     public static Post create(Member member, Board board, PostCreateRequest createReq) {
         return Post.builder()

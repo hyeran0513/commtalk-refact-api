@@ -9,12 +9,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "comment")
-public class Comment extends BaseEntity {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +52,29 @@ public class Comment extends BaseEntity {
     @Setter
     @Column(name = "like_count")
     private long likeCount;
+
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    @Transient
+    @Setter
+    private boolean skipUpdateAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Timestamp.valueOf(LocalDateTime.now());
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (!this.skipUpdateAt) {
+            this.updatedAt = Timestamp.valueOf(LocalDateTime.now()); // 새로운 날짜로 업데이트
+        }
+    }
 
     public static Comment create(Member member, Post post, CommentCreateRequest createReq) {
         return Comment.builder()

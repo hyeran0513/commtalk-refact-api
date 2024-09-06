@@ -54,6 +54,7 @@ public class MemberActivityServiceImpl implements MemberActivityService {
         } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
             post.setScrapCount(post.getScrapCount() + 1);
         }
+        post.setSkipUpdateAt(true);
 
         return PostDTO.from(postRepo.save(post), new ArrayList<>(), true, true);
     }
@@ -72,6 +73,7 @@ public class MemberActivityServiceImpl implements MemberActivityService {
         } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
             post.setScrapCount(post.getScrapCount() - 1);
         }
+        post.setSkipUpdateAt(true);
 
         return PostDTO.from(postRepo.save(post), new ArrayList<>(), false, false);
     }
@@ -97,6 +99,8 @@ public class MemberActivityServiceImpl implements MemberActivityService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         comment.setLikeCount(comment.getLikeCount() + 1);
+        comment.setSkipUpdateAt(true);
+
         return ParentCommentDTO.from(commentRepo.save(comment), true);
     }
 
@@ -110,6 +114,8 @@ public class MemberActivityServiceImpl implements MemberActivityService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
         comment.setLikeCount(comment.getLikeCount() - 1);
+        comment.setSkipUpdateAt(true);
+
         return ParentCommentDTO.from(commentRepo.save(comment), false);
     }
 
