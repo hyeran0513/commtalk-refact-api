@@ -1,5 +1,6 @@
 package com.commtalk.domain.post.dto;
 
+import com.commtalk.domain.board.dto.BoardSimpleDTO;
 import com.commtalk.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -21,6 +22,9 @@ public class PostSimpleDTO {
 
     @Schema(description = "게시글 내용 미리보기")
     private String previewContent;
+
+    @Schema(description = "게시판 정보")
+    private BoardSimpleDTO board;
 
     @Schema(description = "작성자")
     private String authorName;
@@ -49,6 +53,7 @@ public class PostSimpleDTO {
                 .postId(post.getId())
                 .title(post.getTitle())
                 .previewContent((content.length() > 10) ? content.substring(0, 10) + " ..." : content)
+                .board(BoardSimpleDTO.from(post.getBoard()))
                 .authorName((post.isAnonymousYN()) ? "익명" : post.getAuthor().getMemberName())
                 .updatedAt(sdf.format(post.getUpdatedAt()))
                 .commentableYN(post.isCommentableYN())

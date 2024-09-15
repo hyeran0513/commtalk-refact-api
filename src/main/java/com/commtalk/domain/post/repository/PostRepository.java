@@ -4,6 +4,7 @@ import com.commtalk.domain.post.entity.ActivityType;
 import com.commtalk.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,68 +20,30 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Object[]> findById(Long id, Long memberId, ActivityType.TypeName lTypeName,
                                 ActivityType.TypeName sTypeName, boolean deletedYN);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN FETCH p.author a " +
-            "WHERE p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p WHERE p.deletedYN = :deletedYN")
-    Page<Post> findAllOrderByUpdatedAt(Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByDeletedYNOrderByUpdatedAtDesc(boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN p.board b " +
-            "JOIN FETCH p.author a " +
-            "WHERE b.id = :boardId AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "JOIN p.board b " +
-                    "WHERE b.id = :boardId AND p.deletedYN = :deletedYN")
-    Page<Post> findByBoardIdOrderByUpdatedAt(Long boardId, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByBoardIdAndDeletedYNOrderByUpdatedAtDesc(Long boardId, boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN FETCH p.author a " +
-            "WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword% AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND p.deletedYN = :deletedYN")
-    Page<Post> findByKeywordOrderByUpdateAt(String keyword, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByBoardIdAndDeletedYNOrderByViewCountDesc(Long boardId, boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN p.board b " +
-            "JOIN FETCH p.author a " +
-            "WHERE b.id = :boardId AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "JOIN p.board b " +
-                    "WHERE b.id = :boardId AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND p.deletedYN = :deletedYN")
-    Page<Post> findByBoardAndKeywordOrderByUpdateAt(Long boardId, String keyword, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByTitleContainingOrContentContainingAndDeletedYNOrderByUpdatedAtDesc(
+            String titleKeyword, String contentKeyword, boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN FETCH p.author a " +
-            "WHERE a.id = :authorId AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "JOIN p.author a " +
-                    "WHERE a.id = :authorId AND p.deletedYN = :deletedYN")
-    Page<Post> findByAuthorOrderByUpdateAt(Long authorId, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByBoardIdAndTitleContainingOrContentContainingAndDeletedYNOrderByUpdatedAtDesc(
+            Long boardId, String titleKeyword, String contentKeyword, boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN FETCH p.author a " +
-            "WHERE p.id IN :postIds AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.updatedAt DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "JOIN p.author a " +
-                    "WHERE p.id IN :postIds AND p.deletedYN = :deletedYN")
-    Page<Post> findByIdsOrderByUpdateAt(List<Long> postIds, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByAuthorIdAndDeletedYNOrderByUpdatedAtDesc(Long authorId, boolean deletedYN, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p " +
-            "JOIN FETCH p.board b " +
-            "WHERE b.id = :boardId AND p.deletedYN = :deletedYN " +
-            "ORDER BY p.viewCount DESC",
-            countQuery = "SELECT COUNT(p) FROM Post p " +
-                    "JOIN p.board b " +
-                    "WHERE b.id = :boardId AND p.deletedYN = :deletedYN")
-    Page<Post> findByBoardIdOrderByViewCount(Long boardId, Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByIdInAndDeletedYNOrderByUpdatedAtDesc(List<Long> postIds, boolean deletedYN, Pageable pageable);
 
-    Page<Post> findAllByDeletedYNOrderByViewCountDesc(Pageable pageable, boolean deletedYN);
+    @EntityGraph(attributePaths = {"board", "author"})
+    Page<Post> findByDeletedYNOrderByViewCountDesc(boolean deletedYN, Pageable pageable);
 
 }

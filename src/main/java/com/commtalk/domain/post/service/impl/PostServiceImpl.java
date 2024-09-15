@@ -37,42 +37,42 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostPageDTO getPosts(Pageable pageable) {
         // 페이지에 해당하는 게시글 목록 조회
-        Page<Post> postPage = postRepo.findAllOrderByUpdatedAt(pageable, false);
+        Page<Post> postPage = postRepo.findByDeletedYNOrderByUpdatedAtDesc(false, pageable);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByBoard(Long boardId, Pageable pageable) {
         // 페이지에 해당하는 게시판 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByBoardIdOrderByUpdatedAt(boardId, pageable, false);
+        Page<Post> postPage = postRepo.findByBoardIdAndDeletedYNOrderByUpdatedAtDesc(boardId, false, pageable);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByKeyword(String keyword, Pageable pageable) {
         // 제목 또는 내용에 키워드가 포함되는 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByKeywordOrderByUpdateAt(keyword, pageable, false);
+        Page<Post> postPage = postRepo.findByTitleContainingOrContentContainingAndDeletedYNOrderByUpdatedAtDesc(keyword, keyword, false, pageable);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByBoardAndKeyword(Long boardId, String keyword, Pageable pageable) {
         // 제목 또는 내용에 키워드가 포함되는 게시판 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByBoardAndKeywordOrderByUpdateAt(boardId, keyword, pageable, false);
+        Page<Post> postPage = postRepo.findByBoardIdAndTitleContainingOrContentContainingAndDeletedYNOrderByUpdatedAtDesc(boardId, keyword, keyword, false, pageable);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByAuthor(Long memberId, Pageable pageable) {
         // 회원이 작성한 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByAuthorOrderByUpdateAt(memberId, pageable, false);
+        Page<Post> postPage = postRepo.findByAuthorIdAndDeletedYNOrderByUpdatedAtDesc(memberId, false, pageable);
         return PostPageDTO.of(postPage);
     }
 
     @Override
     public PostPageDTO getPostsByIds(List<Long> postIds, Pageable pageable) {
         // 특정 postId에 해당하는 게시글 목록 조회
-        Page<Post> postPage = postRepo.findByIdsOrderByUpdateAt(postIds, pageable, false);
+        Page<Post> postPage = postRepo.findByIdInAndDeletedYNOrderByUpdatedAtDesc(postIds, false, pageable);
         return PostPageDTO.of(postPage);
     }
 
@@ -123,7 +123,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostPreviewDTO> getPostPreviewsByBoard(Long boardId, int size) {
         // size 만큼 게시글 미리보기 목록 조회
-        Page<Post> postPage = postRepo.findByBoardIdOrderByViewCount(boardId, PageRequest.of(0, size), false);
+        Page<Post> postPage = postRepo.findByBoardIdAndDeletedYNOrderByViewCountDesc(boardId, false, PageRequest.of(0, size));
         List<Post> postList = postPage.getContent();
 
         return postList.stream()
@@ -133,7 +133,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostPreviewDTO> getPostPreviewsTop3ByViews() {
-        Page<Post> postPage = postRepo.findAllByDeletedYNOrderByViewCountDesc(PageRequest.of(0, 3), false);
+        Page<Post> postPage = postRepo.findByDeletedYNOrderByViewCountDesc(false, PageRequest.of(0, 3));
         List<Post> postList = postPage.getContent();
 
         return postList.stream()
