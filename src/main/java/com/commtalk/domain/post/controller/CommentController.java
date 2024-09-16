@@ -1,6 +1,7 @@
 package com.commtalk.domain.post.controller;
 
 import com.commtalk.common.dto.ResponseDTO;
+import com.commtalk.domain.post.dto.MemberLikeDTO;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.request.CommentCreateRequest;
 import com.commtalk.domain.post.dto.request.CommentUpdateRequest;
@@ -80,18 +81,18 @@ public class CommentController {
 
     @Operation(summary = "게시글 댓글 좋아요 및 취소")
     @PostMapping(path = "/{commentId}/like")
-    public ResponseEntity<ParentCommentDTO> likeComment(@PathVariable Long postId, @PathVariable Long commentId,
-                                                       HttpServletRequest request) {
+    public ResponseEntity<MemberLikeDTO> likeComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                     HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         postSvc.isExistsPost(postId); // 게시글이 존재하는지 확인
 
-        ParentCommentDTO commentDto;
+        MemberLikeDTO likeDto;
         if (!memberActivitySvc.isLikeComment(memberId, commentId)) {
-            commentDto = memberActivitySvc.likeComment(memberId, commentId); // 좋아요
+            likeDto = memberActivitySvc.likeComment(memberId, commentId, 1); // 좋아요
         } else {
-            commentDto = memberActivitySvc.unlikeComment(memberId, commentId); // 좋아요 취소
+            likeDto = memberActivitySvc.likeComment(memberId, commentId, -1); // 좋아요 취소
         }
-        return ResponseEntity.ok(commentDto);
+        return ResponseEntity.ok(likeDto);
     }
 
 }

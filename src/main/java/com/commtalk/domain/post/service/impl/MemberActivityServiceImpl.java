@@ -2,6 +2,8 @@ package com.commtalk.domain.post.service.impl;
 
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.domain.member.entity.Member;
+import com.commtalk.domain.post.dto.MemberLikeDTO;
+import com.commtalk.domain.post.dto.MemberScrapDTO;
 import com.commtalk.domain.post.dto.ParentCommentDTO;
 import com.commtalk.domain.post.dto.PostDTO;
 import com.commtalk.domain.post.entity.ActivityType;
@@ -36,46 +38,58 @@ public class MemberActivityServiceImpl implements MemberActivityService {
 
     @Override
     @Transactional
-    public PostDTO likeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
-        // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByName(typeName)
-                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
+    public MemberLikeDTO likePost(Long memberId, Long postId, int signNum) {
+        if (signNum == 1) {
+            // 회원 활동 유형 조회
+            ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.POST_LIKE)
+                    .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
 
-        // 회원 활동 저장
-        Member member = Member.builder().id(memberId).build();
-        MemberActivity activity = MemberActivity.create(activityType, member, postId);
-        activityRepo.save(activity);
+            // 회원 활동 저장
+            Member member = Member.builder().id(memberId).build();
+            MemberActivity activity = MemberActivity.create(activityType, member, postId);
+            activityRepo.save(activity);
+        } else {
+            // 회원 활동 삭제
+            activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, ActivityType.TypeName.POST_LIKE);
+        }
 
-        // 게시글 좋아요(스크랩) 수 업데이트
+        // 게시글 좋아요 수 업데이트
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        if (typeName == ActivityType.TypeName.POST_LIKE) {
-            post.setLikeCount(post.getLikeCount() + 1);
-        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
-            post.setScrapCount(post.getScrapCount() + 1);
-        }
+        post.setLikeCount(post.getLikeCount() + signNum);
         post.setSkipUpdateAt(true);
 
-        return PostDTO.from(postRepo.save(post), new ArrayList<>(), true, true);
+        postRepo.save(post);
+
+        return MemberLikeDTO.from(post.getLikeCount(), signNum == 1);
     }
 
     @Override
     @Transactional
-    public PostDTO unlikeOrScrapPost(Long memberId, Long postId, ActivityType.TypeName typeName) {
-        // 회원 활동 삭제
-        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, typeName);
+    public MemberScrapDTO scrapPost(Long memberId, Long postId, int signNum) {
+        if (signNum == 1) {
+            // 회원 활동 유형 조회
+            ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.POST_SCRAP)
+                    .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
 
-        // 게시글 좋아요(스크랩) 수 업데이트
+            // 회원 활동 저장
+            Member member = Member.builder().id(memberId).build();
+            MemberActivity activity = MemberActivity.create(activityType, member, postId);
+            activityRepo.save(activity);
+        } else {
+            // 회원 활동 삭제
+            activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, postId, ActivityType.TypeName.POST_SCRAP);
+        }
+
+        // 게시글 좋아요 수 업데이트
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        if (typeName == ActivityType.TypeName.POST_LIKE) {
-            post.setLikeCount(post.getLikeCount() - 1);
-        } else if (typeName == ActivityType.TypeName.POST_SCRAP) {
-            post.setScrapCount(post.getScrapCount() - 1);
-        }
+        post.setScrapCount(post.getScrapCount() + signNum);
         post.setSkipUpdateAt(true);
 
-        return PostDTO.from(postRepo.save(post), new ArrayList<>(), false, false);
+        postRepo.save(post);
+
+        return MemberScrapDTO.from(post.getScrapCount(), signNum == 1);
     }
 
     @Override
@@ -85,38 +99,30 @@ public class MemberActivityServiceImpl implements MemberActivityService {
 
     @Override
     @Transactional
-    public ParentCommentDTO likeComment(Long memberId, Long commentId) {
-        // 회원 활동 유형 조회
-        ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.COMMENT_LIKE)
-                .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
+    public MemberLikeDTO likeComment(Long memberId, Long commentId, int signNum) {
+        if (signNum == 1) {
+            // 회원 활동 유형 조회
+            ActivityType activityType = activityTypeRepo.findByName(ActivityType.TypeName.COMMENT_LIKE)
+                    .orElseThrow(() -> new EntityNotFoundException("회원 활동 유형을 찾을 수 없습니다."));
 
-        // 회원 활동 저장
-        Member member = Member.builder().id(memberId).build();
-        MemberActivity activity = MemberActivity.create(activityType, member, commentId);
-        activityRepo.save(activity);
-
-        // 댓글 좋아요 수 업데이트
-        Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
-        comment.setLikeCount(comment.getLikeCount() + 1);
-        comment.setSkipUpdateAt(true);
-
-        return ParentCommentDTO.from(commentRepo.save(comment), true);
-    }
-
-    @Override
-    @Transactional
-    public ParentCommentDTO unlikeComment(Long memberId, Long commentId) {
-        // 회원 활동 삭제
-        activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
+            // 회원 활동 저장
+            Member member = Member.builder().id(memberId).build();
+            MemberActivity activity = MemberActivity.create(activityType, member, commentId);
+            activityRepo.save(activity);
+        } else {
+            // 회원 활동 삭제
+            activityRepo.deleteByMemberIdAndRefIdAndTypeName(memberId, commentId, ActivityType.TypeName.COMMENT_LIKE);
+        }
 
         // 댓글 좋아요 수 업데이트
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
-        comment.setLikeCount(comment.getLikeCount() - 1);
+        comment.setLikeCount(comment.getLikeCount() + signNum);
         comment.setSkipUpdateAt(true);
 
-        return ParentCommentDTO.from(commentRepo.save(comment), false);
+        commentRepo.save(comment);
+
+        return MemberLikeDTO.from(comment.getLikeCount(), signNum == 1);
     }
 
     @Override

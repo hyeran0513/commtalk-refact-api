@@ -99,34 +99,34 @@ public class BoardPostController {
 
     @Operation(summary = "게시글 좋아요 및 취소")
     @PostMapping(path = "/{postId}/like")
-    public ResponseEntity<PostDTO> likePost(@PathVariable Long boardId, @PathVariable Long postId,
+    public ResponseEntity<MemberLikeDTO> likePost(@PathVariable Long boardId, @PathVariable Long postId,
                                                         HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
 
-        PostDTO postDto;
+        MemberLikeDTO likeDto;
         if (!memberActivitySvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE)) {
-            postDto = memberActivitySvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요
+            likeDto = memberActivitySvc.likePost(memberId, postId, 1); // 좋아요
         } else {
-            postDto = memberActivitySvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_LIKE); // 좋아요 취소
+            likeDto = memberActivitySvc.likePost(memberId, postId, -1); // 좋아요 취소
         }
-        return ResponseEntity.ok(postDto);
+        return ResponseEntity.ok(likeDto);
     }
 
     @Operation(summary = "게시글 스크랩 및 취소")
     @PostMapping(path = "/{postId}/scrap")
-    public ResponseEntity<PostDTO> scrapPost(@PathVariable Long boardId, @PathVariable Long postId,
+    public ResponseEntity<MemberScrapDTO> scrapPost(@PathVariable Long boardId, @PathVariable Long postId,
                                                         HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
         boardSvc.isExistsBoard(boardId); // 게시판이 존재하는지 확인
 
-        PostDTO postDto;
+        MemberScrapDTO scrapDto;
         if (!memberActivitySvc.isLikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP)) {
-            postDto = memberActivitySvc.likeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩
+            scrapDto = memberActivitySvc.scrapPost(memberId, postId, 1); // 스크랩
         } else {
-            postDto = memberActivitySvc.unlikeOrScrapPost(memberId, postId, ActivityType.TypeName.POST_SCRAP); // 스크랩 취소
+            scrapDto = memberActivitySvc.scrapPost(memberId, postId,-1); // 스크랩 취소
         }
-        return ResponseEntity.ok(postDto);
+        return ResponseEntity.ok(scrapDto);
     }
 
 }
