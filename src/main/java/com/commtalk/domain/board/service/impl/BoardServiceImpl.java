@@ -8,8 +8,10 @@ import com.commtalk.domain.board.dto.BoardWithPinDTO;
 import com.commtalk.domain.board.dto.PinnedBoardDTO;
 import com.commtalk.domain.board.dto.request.BoardCreateRequest;
 import com.commtalk.domain.board.entity.Board;
+import com.commtalk.domain.board.entity.BoardRequest;
 import com.commtalk.domain.board.entity.PinnedBoard;
 import com.commtalk.domain.board.repository.BoardRepository;
+import com.commtalk.domain.board.repository.BoardRequestRepository;
 import com.commtalk.domain.board.repository.PinnedBoardRepository;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.member.entity.Member;
@@ -27,6 +29,7 @@ import java.util.stream.LongStream;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepo;
+    private final BoardRequestRepository boardReqRepo;
     private final PinnedBoardRepository pinnedBoardRepo;
 
     @Override
@@ -88,16 +91,18 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void createBoard(BoardCreateRequest createReq, Long adminId) {
+    public void createBoardRequest(BoardCreateRequest createReq, Long memberId) {
         // 게시판 중복 여부 확인
         if (boardRepo.existsByBoardName(createReq.getBoardName())) {
             throw new CustomException(ErrorCode.DUPLICATE_BOARDNAME);
         }
 
-        // 게시판 생성
-        Board board = Board.create(createReq, adminId);
-        Board newBoard = boardRepo.save(board);
-        if (newBoard.getId() == null) {
+        // 게시판 요청 생성
+        Member requester = Member.builder().id(memberId).build();
+        Member approver = Member.builder().id(1L).build(); // 관리자 ID
+        BoardRequest boardReq = BoardRequest.create(createReq, requester, approver);
+        BoardRequest newBoardReq = boardReqRepo.save(boardReq);
+        if (newBoardReq.getId() == null) {
             throw new CustomException(ErrorCode.BOARD_CREATE_FAILED);
         }
     }

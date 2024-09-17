@@ -19,7 +19,7 @@ public interface BoardService {
 
     List<PinnedBoardDTO> getPinnedBoards(Long memberId);
 
-    void createBoard(BoardCreateRequest createReq, Long adminId);
+    void createBoardRequest(BoardCreateRequest createReq, Long memberId);
 
     void pinDefaultBoard(Long memberId);
 

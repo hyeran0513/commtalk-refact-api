@@ -49,13 +49,13 @@ public class BoardController {
         return ResponseEntity.ok(boardDto);
     }
 
-    @Operation(summary = "게시판 생성")
-    @PostMapping(path = "")
-    public ResponseEntity<ResponseDTO<String>> createBoard(@RequestBody @Valid BoardCreateRequest createReq,
+    @Operation(summary = "게시판 생성 요청")
+    @PostMapping(path = "/requests")
+    public ResponseEntity<ResponseDTO<String>> createBoardRequest(@RequestBody @Valid BoardCreateRequest createReq,
                                                            HttpServletRequest request) {
-        Long adminId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.createBoard(createReq, adminId);
-        return ResponseDTO.of(HttpStatus.OK, "게시판을 생성했습니다.");
+        Long memberId = jwtAuthenticationProvider.getMemberId(request);
+        boardSvc.createBoardRequest(createReq, memberId);
+        return ResponseDTO.of(HttpStatus.OK, "게시판 생성을 요청했습니다.");
     }
 
 }
