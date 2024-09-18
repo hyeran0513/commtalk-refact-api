@@ -1,9 +1,10 @@
 package com.commtalk.domain.board.service;
 
-import com.commtalk.domain.board.dto.BoardDTO;
-import com.commtalk.domain.board.dto.BoardWithPinDTO;
-import com.commtalk.domain.board.dto.PinnedBoardDTO;
+import com.commtalk.domain.board.dto.*;
 import com.commtalk.domain.board.dto.request.BoardCreateRequest;
+import com.commtalk.domain.board.entity.BoardRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -18,6 +19,10 @@ public interface BoardService {
     void isExistsBoard(Long boardId);
 
     List<PinnedBoardDTO> getPinnedBoards(Long memberId);
+
+    BoardRequestPageDTO getAllBoardRequest(Pageable pageable);
+
+    BoardRequestPageDTO getBoardRequestsByMember(Long memberId, Pageable pageable);
 
     void createBoardRequest(BoardCreateRequest createReq, Long memberId);
 

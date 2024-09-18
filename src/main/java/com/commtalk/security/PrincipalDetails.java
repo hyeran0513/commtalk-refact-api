@@ -2,6 +2,7 @@ package com.commtalk.security;
 
 import com.commtalk.domain.member.entity.Member;
 import com.commtalk.domain.member.entity.MemberPassword;
+import com.commtalk.domain.member.entity.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,6 +36,10 @@ public class PrincipalDetails implements UserDetails {
     public Long getMemberId() {
         return member.getId();
     }
+
+    public MemberRole getMemberRole() {
+        return member.getRole();
+    };
 
     // 사용자 계정의 만료 여부를 반환 (기본적으로 true)
     @Override

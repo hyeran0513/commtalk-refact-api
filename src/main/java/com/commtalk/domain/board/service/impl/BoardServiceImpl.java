@@ -3,9 +3,7 @@ package com.commtalk.domain.board.service.impl;
 import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.EntityNotFoundException;
 import com.commtalk.common.exception.ErrorCode;
-import com.commtalk.domain.board.dto.BoardDTO;
-import com.commtalk.domain.board.dto.BoardWithPinDTO;
-import com.commtalk.domain.board.dto.PinnedBoardDTO;
+import com.commtalk.domain.board.dto.*;
 import com.commtalk.domain.board.dto.request.BoardCreateRequest;
 import com.commtalk.domain.board.entity.Board;
 import com.commtalk.domain.board.entity.BoardRequest;
@@ -16,6 +14,8 @@ import com.commtalk.domain.board.repository.PinnedBoardRepository;
 import com.commtalk.domain.board.service.BoardService;
 import com.commtalk.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +88,18 @@ public class BoardServiceImpl implements BoardService {
         return pinnedBoardList.stream()
                 .map(PinnedBoardDTO::from)
                 .toList();
+    }
+
+    @Override
+    public BoardRequestPageDTO getAllBoardRequest(Pageable pageable) {
+        Page<BoardRequest> boardReqPage = boardReqRepo.findByOrderByUpdatedAtDesc(pageable);
+        return BoardRequestPageDTO.of(boardReqPage);
+    }
+
+    @Override
+    public BoardRequestPageDTO getBoardRequestsByMember(Long memberId, Pageable pageable) {
+        Page<BoardRequest> boardReqPage = boardReqRepo.findByRequesterIdOrderByUpdatedAtDesc(memberId, pageable);
+        return BoardRequestPageDTO.of(boardReqPage);
     }
 
     @Override

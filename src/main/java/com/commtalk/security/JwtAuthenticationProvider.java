@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.commtalk.common.exception.CustomException;
 import com.commtalk.common.exception.ErrorCode;
+import com.commtalk.domain.member.entity.MemberRole;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class JwtAuthenticationProvider {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("memberId", userDetails.getMemberId())
+                .claim("memberRole", userDetails.getMemberRole().getRoleName().name())
                 .setExpiration(expiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -126,6 +128,34 @@ public class JwtAuthenticationProvider {
         }
 
         return memberId;
+    }
+
+    /**
+     * 토큰으로 memberRole를 찾아 반환
+     * @param request 요청 객체
+     * @return memberRole
+     */
+    public String getMemberRole(HttpServletRequest request) {
+        if (request.getHeader("Authorization") == null) {
+            return null;
+        }
+
+        String token = resolveToken(request);
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+
+        Object memberRoleObject = claims.get("memberRole");
+        if (memberRoleObject == null) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        String memberRole;
+        try {
+            memberRole = memberRoleObject.toString();
+        } catch (ClassCastException | NullPointerException e) {
+            throw new CustomException(ErrorCode.INVALID_MEMBER);
+        }
+
+        return memberRole;
     }
 
 //    // secret key 랜덤 생성 용도
