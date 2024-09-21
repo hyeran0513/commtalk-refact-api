@@ -17,4 +17,11 @@ public class BoardCreateRequest {
     @Schema(description = "게시판 설명")
     private String desc;
 
+    public static BoardCreateRequest from(String boardName, String desc) {
+        return BoardCreateRequest.builder()
+                .boardName(boardName)
+                .desc(desc)
+                .build();
+    }
+
 }

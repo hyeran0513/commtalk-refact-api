@@ -21,8 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+
+import static com.commtalk.common.exception.ErrorCode.MISMATCH_REQUESTER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -103,6 +106,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public Long createBoard(BoardCreateRequest createReq, Long adminId) {
+        // 게시판 생성
+        Board board = Board.create(createReq, adminId);
+        Board newBoard = boardRepo.save(board);
+        if (newBoard.getId() == null) {
+            throw new CustomException(ErrorCode.BOARD_CREATE_FAILED);
+        }
+        return newBoard.getId();
+    }
+
+    @Override
     public void createBoardRequest(BoardCreateRequest createReq, Long memberId) {
         // 게시판 중복 여부 확인
         if (boardRepo.existsByBoardName(createReq.getBoardName())) {
@@ -111,12 +125,52 @@ public class BoardServiceImpl implements BoardService {
 
         // 게시판 요청 생성
         Member requester = Member.builder().id(memberId).build();
-        Member approver = Member.builder().id(1L).build(); // 관리자 ID
-        BoardRequest boardReq = BoardRequest.create(createReq, requester, approver);
+        BoardRequest boardReq = BoardRequest.create(createReq, requester);
         BoardRequest newBoardReq = boardReqRepo.save(boardReq);
         if (newBoardReq.getId() == null) {
             throw new CustomException(ErrorCode.BOARD_CREATE_FAILED);
         }
+    }
+
+    @Override
+    public void cancelBoardRequest(Long boardReqId, Long memberId) {
+        // 게시판 요청 내역 조회
+        BoardRequest boardReq = boardReqRepo.findById(boardReqId)
+                .orElseThrow(() -> new EntityNotFoundException("게시판 생성 요청 내역을 찾을 수 없습니다."));
+
+        // 요청 회원 id 확인
+        if (!Objects.equals(memberId, boardReq.getRequester().getId())) {
+            throw new CustomException(ErrorCode.MISMATCH_REQUESTER_ID);
+        }
+
+        // 게시판 요청 내역 수정
+        boardReq.setCanceledYN(true);
+
+        // 수정된 게시판 요청 내역 저장
+        boardReqRepo.save(boardReq);
+    }
+
+    @Override
+    @Transactional
+    public void updateBoardRequestStatus(Long boardReqId, Long adminId, int reqSts) {
+        // 게시판 요청 내역 조회
+        BoardRequest boardReq = boardReqRepo.findById(boardReqId)
+                .orElseThrow(() -> new EntityNotFoundException("게시판 생성 요청 내역을 찾을 수 없습니다."));
+
+        // 요청을 승인하는 경우 - 게시판 생성
+        if (reqSts == 1) {
+            BoardCreateRequest createReq = BoardCreateRequest.from(boardReq.getBoardName(), boardReq.getDescription());
+            Long boardId = createBoard(createReq, adminId);
+            boardReq.setBoardId(boardId);
+        }
+
+        // 게시판 요청 상태 수정
+        Member approver = Member.builder().id(adminId).build();
+        boardReq.setApprover(approver);
+        boardReq.setReqSts(reqSts);
+
+        // 수정된 게시판 요청 내역 저장
+        boardReqRepo.save(boardReq);
     }
 
     @Override

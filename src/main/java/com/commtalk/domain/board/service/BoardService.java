@@ -24,7 +24,13 @@ public interface BoardService {
 
     BoardRequestPageDTO getBoardRequestsByMember(Long memberId, Pageable pageable);
 
+    Long createBoard(BoardCreateRequest createReq, Long adminId);
+
     void createBoardRequest(BoardCreateRequest createReq, Long memberId);
+
+    void cancelBoardRequest(Long boardReqId, Long memberId);
+
+    void updateBoardRequestStatus(Long boardReqId, Long adminId, int reqSts);
 
     void pinDefaultBoard(Long memberId);
 

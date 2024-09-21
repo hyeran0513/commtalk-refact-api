@@ -6,6 +6,7 @@ import com.commtalk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -20,6 +21,7 @@ public class BoardRequest extends BaseEntity {
     @Column(name = "board_req_id")
     private Long id;
 
+    @Setter
     @Column(name = "board_id")
     private Long boardId;
 
@@ -27,6 +29,7 @@ public class BoardRequest extends BaseEntity {
     @JoinColumn(name = "requester_id")
     private Member requester;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approver_id")
     private Member approver;
@@ -37,13 +40,17 @@ public class BoardRequest extends BaseEntity {
     @Column(name = "board_description")
     private String description;
 
+    @Setter
     @Column(name = "req_sts")
     private int reqSts;
 
-    public static BoardRequest create(BoardCreateRequest createReq, Member requester, Member approver) {
+    @Setter
+    @Column(name = "canceled_yn")
+    private boolean canceledYN;
+
+    public static BoardRequest create(BoardCreateRequest createReq, Member requester) {
         return BoardRequest.builder()
                 .requester(requester)
-                .approver(approver)
                 .boardName(createReq.getBoardName())
                 .description(createReq.getDesc())
                 .reqSts(0)
