@@ -26,6 +26,8 @@ public interface BoardService {
 
     Long createBoard(BoardCreateRequest createReq, Long adminId);
 
+    void deleteBoard(Long boardId);
+
     void createBoardRequest(BoardCreateRequest createReq, Long memberId);
 
     void cancelBoardRequest(Long boardReqId, Long memberId);

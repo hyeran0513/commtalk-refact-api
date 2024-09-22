@@ -211,4 +211,9 @@ public class PostServiceImpl implements PostService {
         postRepo.save(post);
     }
 
+    @Override
+    public int countPostByBoard(Long boardId) {
+        return postRepo.countByBoardIdAndDeletedYN(boardId, false);
+    }
+
 }

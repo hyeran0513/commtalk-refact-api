@@ -46,4 +46,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"board", "author"})
     Page<Post> findByDeletedYNOrderByViewCountDesc(boolean deletedYN, Pageable pageable);
 
+    int countByBoardIdAndDeletedYN(Long boardId, boolean deletedYN);
+
 }

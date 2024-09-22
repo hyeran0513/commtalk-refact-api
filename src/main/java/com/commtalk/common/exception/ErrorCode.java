@@ -25,6 +25,7 @@ public enum ErrorCode {
     EXCEEDED_PIN_LIMIT(400, "핀 고정 게시판은 6개를 넘을 수 없습니다."),
     BOARD_CREATE_FAILED(500, "게시판 생성에 실패했습니다."),
     MISMATCH_REQUESTER_ID(400, "회원이 요청한 게시판 생성 요청 내역만 취소 가능합니다."),
+    BOARD_NOT_EMPTY(409, "게시판에 게시글이 남아있어 삭제할 수 없습니다."),
 
     // 파일 에러
     FILE_NOT_FOUND(500, "파일을 읽을 수 없거나 존재하지 않습니다"),

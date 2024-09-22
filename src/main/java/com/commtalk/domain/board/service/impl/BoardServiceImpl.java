@@ -37,7 +37,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardDTO> getAllBoard() {
-        List<Board> boardList = boardRepo.findAll();
+        List<Board> boardList = boardRepo.findByDeletedYNOrderById(false);
 
         return boardList.stream()
                 .map(BoardDTO::from)
@@ -47,7 +47,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardWithPinDTO> getAllBoardWithPin(Long memberId) {
         // 전체 게시판, 핀고정 게시판 조회
-        List<Board> boardList = boardRepo.findAll();
+        List<Board> boardList = boardRepo.findByDeletedYNOrderById(false);
         List<PinnedBoard> pinnedBoardList = pinnedBoardRepo.findAllByMemberIdPinnedOrderByOrderAsc(memberId);
 
         // 핀고정 게시판을 boardId를 key로 하는 Map으로 변환
@@ -117,9 +117,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public void deleteBoard(Long boardId) {
+        // 게시판 조회
+        Board board = boardRepo.findById(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("게시판을 찾을 수 없습니다."));
+
+        // 게시판의 deletedYN 컬럼 값을 true로 변경
+        board.setDeletedYN(true);
+
+        // 수정된 게시판 저장
+        boardRepo.save(board);
+    }
+
+    @Override
     public void createBoardRequest(BoardCreateRequest createReq, Long memberId) {
         // 게시판 중복 여부 확인
-        if (boardRepo.existsByBoardName(createReq.getBoardName())) {
+        if (boardRepo.existsByBoardNameAndDeletedYN(createReq.getBoardName(), false)) {
             throw new CustomException(ErrorCode.DUPLICATE_BOARDNAME);
         }
 

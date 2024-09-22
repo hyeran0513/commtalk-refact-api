@@ -5,6 +5,7 @@ import com.commtalk.domain.board.dto.request.BoardCreateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -29,6 +30,10 @@ public class Board extends BaseEntity {
 
     @Column(name = "board_description")
     private String description;
+
+    @Setter
+    @Column(name = "deleted_yn")
+    private boolean deletedYN;
 
     public static Board create(BoardCreateRequest createReq, Long adminId) {
         return Board.builder()

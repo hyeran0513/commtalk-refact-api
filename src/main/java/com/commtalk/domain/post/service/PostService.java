@@ -40,4 +40,6 @@ public interface PostService {
 
     void deletePost(Long memberId, Long postId);
 
+    int countPostByBoard(Long boardId);
+
 }

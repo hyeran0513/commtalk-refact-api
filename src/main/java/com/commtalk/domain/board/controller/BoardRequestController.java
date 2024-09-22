@@ -59,7 +59,7 @@ public class BoardRequestController {
     @PostMapping(path = "/{boardReqId}/cancel")
     public ResponseEntity<ResponseDTO<String>> cancelBoardRequest(@PathVariable Long boardReqId, HttpServletRequest request) {
         Long memberId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.cancelBoardRequest(boardReqId, memberId);
+        boardSvc.cancelBoardRequest(boardReqId, memberId); // 게시판 요청 취소
         return ResponseDTO.of(HttpStatus.OK, "게시판 생성 요청을 취소했습니다.");
     }
 
@@ -67,7 +67,7 @@ public class BoardRequestController {
     @PatchMapping(path = "/{boardReqId}/approve")
     public ResponseEntity<ResponseDTO<String>> approveBoardRequest(@PathVariable Long boardReqId, HttpServletRequest request) {
         Long adminId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.updateBoardRequestStatus(boardReqId, adminId, 1);
+        boardSvc.updateBoardRequestStatus(boardReqId, adminId, 1); // 게시판 요청 승인
         return ResponseDTO.of(HttpStatus.OK, "게시판 생성 요청을 승인했습니다. 새 게시판을 생성했습니다.");
     }
 
@@ -75,7 +75,7 @@ public class BoardRequestController {
     @PatchMapping(path = "/{boardReqId}/reject")
     public ResponseEntity<ResponseDTO<String>> rejectBoardRequest(@PathVariable Long boardReqId, HttpServletRequest request) {
         Long adminId = jwtAuthenticationProvider.getMemberId(request);
-        boardSvc.updateBoardRequestStatus(boardReqId, adminId, 2);
+        boardSvc.updateBoardRequestStatus(boardReqId, adminId, 2); // 게시판 요청 거절
         return ResponseDTO.of(HttpStatus.OK, "게시판 생성 요청을 거절했습니다.");
     }
 
