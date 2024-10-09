@@ -101,7 +101,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardRequestPageDTO getBoardRequestsByMember(Long memberId, Pageable pageable) {
-        Page<BoardRequest> boardReqPage = boardReqRepo.findByRequesterIdOrderByUpdatedAtDesc(memberId, pageable);
+        Page<BoardRequest> boardReqPage = boardReqRepo.findByRequesterIdOrderByIdDesc(memberId, pageable);
         return BoardRequestPageDTO.of(boardReqPage);
     }
 

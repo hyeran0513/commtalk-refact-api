@@ -15,6 +15,6 @@ public interface BoardRequestRepository extends JpaRepository<BoardRequest, Long
     Page<BoardRequest> findByOrderByUpdatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"requester", "approver"})
-    Page<BoardRequest> findByRequesterIdOrderByUpdatedAtDesc(Long requesterId, Pageable pageable);
+    Page<BoardRequest> findByRequesterIdOrderByIdDesc(Long requesterId, Pageable pageable);
 
 }
