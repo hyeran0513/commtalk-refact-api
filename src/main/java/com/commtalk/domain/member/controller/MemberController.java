@@ -34,6 +34,12 @@ public class MemberController {
         return ResponseDTO.of(HttpStatus.OK, token);
     }
 
+    @Operation(summary = "토큰 유효성 검사")
+    @PostMapping(path = "/token/validate")
+    public ResponseEntity<ResponseDTO<String>> validate() {
+        return ResponseDTO.of(HttpStatus.OK, "유효한 토큰입니다.");
+    }
+
     @Operation(summary = "회원 생성")
     @PostMapping(path = "")
     @Transactional(rollbackFor = Exception.class)
