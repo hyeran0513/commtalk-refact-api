@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface BoardRequestRepository extends JpaRepository<BoardRequest, Long> {
 
     @EntityGraph(attributePaths = {"requester", "approver"})
-    Page<BoardRequest> findByOrderByUpdatedAtDesc(Pageable pageable);
+    Page<BoardRequest> findByOrderByIdDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"requester", "approver"})
     Page<BoardRequest> findByRequesterIdOrderByIdDesc(Long requesterId, Pageable pageable);
