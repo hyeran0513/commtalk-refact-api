@@ -76,7 +76,7 @@ public class BoardPostController {
     }
 
     @Operation(summary = "게시글 수정")
-    @PostMapping(path = "/{postId}")
+    @PatchMapping(path = "/{postId}")
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<ResponseDTO<String>> updatePost(@PathVariable Long boardId, @PathVariable Long postId,
                                                           @RequestBody @Valid PostUpdateRequest updateReq, HttpServletRequest request) {
