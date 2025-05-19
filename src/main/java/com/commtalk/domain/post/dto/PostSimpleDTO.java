@@ -52,7 +52,7 @@ public class PostSimpleDTO {
         return PostSimpleDTO.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
-                .previewContent((content.length() > 10) ? content.substring(0, 10) + " ..." : content)
+                .previewContent(content)
                 .board(BoardSimpleDTO.from(post.getBoard()))
                 .authorName((post.isAnonymousYN()) ? "익명" : post.getAuthor().getMemberName())
                 .updatedAt(sdf.format(post.getUpdatedAt()))
